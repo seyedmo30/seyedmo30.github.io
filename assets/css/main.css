@@ -716,6 +716,8 @@ section,
 }
 
 .hero .container {
+  margin-top: -300px;
+  color: rgb(255, 255, 255);
   position: relative;
   z-index: 3;
 }
