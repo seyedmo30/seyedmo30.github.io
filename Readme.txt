@@ -1,6 +1,6 @@
-Thanks for downloading this template!
+Thanks for downloading this Page!
 
-Template Name: Kelly
-Template URL: https://bootstrapmade.com/kelly-free-bootstrap-cv-resume-html-template/
+Template Name: MO30
+Template URL: https://bootstrapmade.com/MO30-free-bootstrap-cv-resume-html-template/
 Author: BootstrapMade.com
 License: https://bootstrapmade.com/license/

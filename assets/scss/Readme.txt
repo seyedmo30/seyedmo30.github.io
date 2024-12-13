@@ -1,2 +1,2 @@
 The .scss (Sass) files are only available in the pro version.
-You can buy it from: https://bootstrapmade.com/kelly-free-bootstrap-cv-resume-html-template/
+You can buy it from: https://bootstrapmade.com/MO30-free-bootstrap-cv-resume-html-template/
