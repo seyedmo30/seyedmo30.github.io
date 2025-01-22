@@ -61,10 +61,11 @@
       </nav>
 
       <div class="header-social-links">
-        <a href="https://www.wikiloc.com/wikiloc/user.do?id=6626460"><i class="bi bi-map"></i></a>
-        <a href="seyed.mo30@gmail.com"><i class="bi bi-envelope"></i></a>
+        <a href="https://www.wikiloc.com/wikiloc/user.do?id=6626460" aria-label="Wikiloc Profile"><i class="fas fa-person-hiking"></i></a>
+        <a href="mailto:seyed.mo30@gmail.com" aria-label="Send an email"><i class="bi bi-envelope"></i></a>
         <a href="https://t.me/seyed_mo30"><i class="bi bi-telegram"></i></a>
         <a href="https://instagram.com/seyedmo30"><i class="bi bi-instagram"></i></a>
+        <a href="https://github.com/seyedmo30"><i class="bi bi-github"></i></a>
         <a href="https://www.linkedin.com/in/mo30/"><i class="bi bi-linkedin"></i></a>
       </div>
 
@@ -360,12 +361,13 @@
 
     <div class="container">
  
-     
+         
       <div class="social-links d-flex justify-content-center">
-        <a href="https://www.wikiloc.com/wikiloc/user.do?id=6626460"><i class="bi bi-map"></i></a>
-        <a href="seyed.mo30@gmail.com"><i class="bi bi-envelope"></i></a>
+        <a href="https://www.wikiloc.com/wikiloc/user.do?id=6626460" aria-label="Wikiloc Profile"><i class="fas fa-person-hiking"></i></a>
+        <a href="mailto:seyed.mo30@gmail.com" aria-label="Send an email"><i class="bi bi-envelope"></i></a>
         <a href="https://t.me/seyed_mo30"><i class="bi bi-telegram"></i></a>
         <a href="https://instagram.com/seyedmo30"><i class="bi bi-instagram"></i></a>
+        <a href="https://github.com/seyedmo30"><i class="bi bi-github"></i></a>
         <a href="https://www.linkedin.com/in/mo30/"><i class="bi bi-linkedin"></i></a>
       </div>
       <div class="credits">
