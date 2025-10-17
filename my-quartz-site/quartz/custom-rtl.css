@@ -1,0 +1,29 @@
+/* Force RTL on body and all elements */
+body {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+/* Tables, code blocks */
+table {
+  direction: rtl;
+  text-align: right;
+}
+
+code, pre {
+  direction: ltr; /* keep code LTR */
+  text-align: left;
+}
+
+/* Headings in RTL */
+h1, h2, h3, h4, h5, h6 {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Optional: adjust spacing for RTL menus, sidebar, TOC */
+nav, aside, .sidebar, .toc {
+  direction: rtl;
+  text-align: right;
+}
