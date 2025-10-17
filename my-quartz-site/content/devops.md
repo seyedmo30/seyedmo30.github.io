@@ -1,6 +1,6 @@
 # ci/cd
 
-![Description of the image](https://github.com/seyedmo30/Tips/blob/main/static/cicd.png)
+![Description of the image](images/cicd.png)
 
 
 سروان یه پروژه زده که هر ریپوزیتوری بخواد توسط argocd زیر نظر گرفته بشه ، باید اینجا رجیستر بشه اسمش `GitOps` هست.

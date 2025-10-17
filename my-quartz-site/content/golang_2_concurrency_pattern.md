@@ -105,9 +105,9 @@ func consumer(inputCh chan int, resultCh chan Result) {
 
 احتمالن این بخش شبیه worker pool هست ، تفاوتی که با ورکر پول دیدم ، این بود که اون یه حلقه داره ، گوروتین ها از یک چنل میخونن و به یک چنل میریزن ، اما در fan out هر گوروتین خروجی رو توی چنل مخصوص خودش میریزه
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/iii3.png)
+![alt text](images/iii3.png)
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/iii4.png)
+![alt text](images/iii4.png)
 
 ## پترن PipeLine
 

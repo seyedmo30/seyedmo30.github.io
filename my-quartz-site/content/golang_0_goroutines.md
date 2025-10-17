@@ -131,7 +131,7 @@ P2 -> M2
      |-> G3
      |-> G4
 ```
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/goroutin1.png)
+![alt text](images/goroutin1.png)
 
 - - **Preemption** 
 
@@ -175,7 +175,7 @@ P2 -> M2
 
 زمانی که یکی از گوروتین ها می خواد io بخونه ، همه ی گوروتین های در صف باید منتظر بمونن ، راه حل اینه که یه ترد دیگه میگیریم و پراسس رو انتقال میدیم به m  جدید ، در تصویر پایین ابتدا m2 وجود نداشت ، ولی بعد این که g1 درخواست sync system call کرد صف پراسس ها جابجا شد به m2 جدید
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/g.png)
+![alt text](images/g.png)
 
 ##### context swiching async system call
 
@@ -195,7 +195,7 @@ P2 -> M2
 در اینروش بر خلاف روش سینک ، نیاز به یک ترد دیگر نیست
 
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/g-1.png)
+![alt text](images/g-1.png)
 
 ### work stealing
 
@@ -208,7 +208,7 @@ P2 -> M2
 ۳ اگه نتونست از netpoller  میگیره
 
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/g-2.png)
+![alt text](images/g-2.png)
 
 
 
@@ -223,14 +223,14 @@ P2 -> M2
 channels underneath
 
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/iii.png)
+![alt text](images/iii.png)
 
 
 هر چنل یه استراکت است و یه سری اینتیتی داره ، مهم ترین آنها
 یه mutex  داره برای لاک ، یه buf  داره که آدرس داده ها هست و اگر چنل آنبافر باشه ، این خالیه ، sendq , recvq  آدرس های گوروتین ها هستن که یا نتونستن ریسیو کنن یا نتونستن سند کنن ، در حقیقت تایپشون waitq  هست و این خود یک لینکد لیست هست ،  
 
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/iii1.png)
+![alt text](images/iii1.png)
 
 
 و sudog اطلاعات گوروتین رو نگه میداره ، elem  آدرس اون هست و g  آبجکت اون

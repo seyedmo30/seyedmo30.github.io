@@ -1,7 +1,7 @@
 
 # NETWORK
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/network.png)
+![alt text](images/network.png)
 ## nat
 
 

@@ -256,7 +256,7 @@ TODO
 
 + stock
 
-+ object-storage(minio) https://github.com/seyedmo30/Tips/blob/main/static/iiiprofile
++ object-storage(minio) images/iiiprofile
 
 
 حالا باید هر دیتابیس بالا رو مشخص کنیم sql  هست یا nosql و دلیلش هم بگیم
@@ -403,7 +403,7 @@ graph TD;
 توسعه تنها بخش کد زدن و تحویل دادن پروژه نیست ، بلکه فیکس باگهای آینده ، افزودن فیچر  و انجام عملیات مانند ادمین جز پروژه هست ، حال هرچقد این کار ها آسان تر باشد ، اصطلاحن نگهداری پروژه راحت تره
 کار هایی مانند تست نویسی ، مانیتور کردن سیستم  ، همچنین افزودن به کدبیس همراه با اویلیبیلیتی ، 
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/clean.png)
+![alt text](images/clean.png)
 
 
 ### long running procces (task)

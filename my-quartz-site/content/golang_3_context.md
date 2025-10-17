@@ -100,7 +100,7 @@ func main() {
 ```
 
 
-![alt text](https://github.com/seyedmo30/Tips/blob/main/static/iii6.png)
+![alt text](images/iii6.png)
 
 ### context.withcancel
 
