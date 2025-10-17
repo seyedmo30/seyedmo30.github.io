@@ -1,4 +1,4 @@
-name: Deploy Quartz to GitHub Pages
+name: Deploy combined site (root + devlog)
 
 on:
   push:
@@ -17,31 +17,68 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node 22
         uses: actions/setup-node@v5
         with:
           node-version: "22"
 
-      - name: Install dependencies
+      - name: Install dependencies (Quartz)
         working-directory: my-quartz-site
         run: |
           npm ci
 
-      - name: Build Quartz site
+      - name: Build Quartz site into devlog/
         working-directory: my-quartz-site
         run: |
-          # Build into devlog (adjust path as needed)
           npx quartz build --output ../devlog
 
-      - name: Upload artifact
+      - name: Prepare combined artifact (root + /devlog)
+        run: |
+          set -e
+          rm -rf site_dist
+          mkdir -p site_dist
+
+          # Copy tracked repo files (exclude quartz source, node_modules, .github, .git)
+          # Using rsync so we preserve directories
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='my-quartz-site' \
+            --exclude='site_dist' \
+            --exclude='.github' \
+            --exclude='devlog' \
+            ./ site_dist/
+
+          # Move the generated devlog into the artifact
+          if [ -d devlog ]; then
+            mv devlog site_dist/devlog
+          else
+            echo "Warning: devlog was not generated."
+          fi
+
+          # Ensure CNAME (if present) is preserved in artifact root
+          if [ -f CNAME ]; then
+            cp -f CNAME site_dist/CNAME
+          fi
+
+          # Optional: show top-level of final artifact for debugging
+          echo "Artifact top-level:"
+          ls -la site_dist | sed -n '1,200p'
+
+      - name: Upload combined artifact for Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: devlog   # path relative to repo root
+          path: site_dist
 
   deploy:
     needs: build
@@ -49,7 +86,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
