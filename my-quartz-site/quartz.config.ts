@@ -15,11 +15,8 @@ const config: QuartzConfig = {
     analytics: {
       provider: "plausible",
     },
-    locale: "fa-IR",
-    defaultDirection: "rtl",
     baseUrl: "www.mo30.ir/devlog",
     ignorePatterns: ["private", "templates", ".obsidian"],
-    customCSS: ["./quartz/custom-rtl.css"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",

@@ -1,3 +1,23 @@
 @use "./base.scss";
 
-// put your custom CSS here!
+// Target content areas (Quartz uses .prose for Markdown-rendered text)
+.prose p,
+.prose h1, .prose h2, .prose h3, .prose h4,
+.prose ul, .prose ol, .prose li {
+  direction: auto;  // Auto-detects: LTR if starts with English/Latin, RTL if starts with Persian/Arabic script
+  unicode-bidi: plaintext;  // Enables full auto-bidi isolation for mixed text (better than 'embed' for inline words)
+  text-align: start;  // Aligns to the detected direction start (left for LTR, right for RTL)
+}
+
+// Optional: Ensure lists flow RTL overall if most content is Persian
+.prose ul, .prose ol {
+  padding-inline-start: 0;  // Removes default LTR indent; use logical 'inline-start' for auto-flip
+  padding-inline-end: 1.5em;  // Indents from the RTL "end" side
+}
+
+// Fallback for non-prose areas (e.g., if your theme overrides)
+p, h1, h2, h3, h4, ul, ol, li {
+  direction: auto;
+  unicode-bidi: plaintext;
+  text-align: start;
+}
