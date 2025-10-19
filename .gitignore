@@ -1,41 +1,59 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# -------------------------------
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Quartz / GitHub Pages .gitignore
 
-# testing
-/coverage
+# -------------------------------
 
-# next.js
-/.next/
-/out/
+# OS / Editor junk
 
-# production
-/build
-/dist
-/quartz.build
-
-# misc
 .DS_Store
-*.pem
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Node / build system
 
-# local env files
-.env*.local
+node_modules/
+package-lock.json
+yarn.lock
+.pnpm-store/
+dist/
+build/
 
-# vercel
-.vercel
+# Quartz build output
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+public/
+.quartz-cache/
+.cache/
+quartz.log
 
-# electron
-/dist-electron
-/node_modules/.cache
+# Temporary / runtime files
+
+.tmp/
+.env
+.env.*
+.vscode/
+.idea/
+.obsidian/
+.sass-cache/
+.npm/
+.pnpm-debug.log*
+
+# GitHub Actions / Pages
+
+# (Keep workflows committed, ignore local artifacts)
+
+*.local
+*.gh-pages
+deploy_key*
+**pycache**/
+*.pyc
+
+# Optional: ignore backup vaults or notes
+
+vault-backup/
+backup/
+notes-old/
