@@ -112,6 +112,27 @@ ok:
 ```
 git checkout feature/finalize-promissory-note
 ```
+
+#### current vs incoming
+
+اگر pull ها rebase  باشه در این صورت **incoming** ها میشن کد های من و اونایی که از develop  اومدن و **current**  میشه 
+
+#### git config pull.rebase
+
+شاید هر بار برای اولین بار پول بزنیم روی یه گیت ، این متن رو ببینیم
+
+```
+hint:   git config pull.rebase false  # merge
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+```
+توجه کنید این یه بار پرسیده میشه و میره تو کانفیگ ، برای تغییرش باید کانفیگ اون گیت رو تغییر داد
+
+می تونیم به جای ریبیس ، اون رو مرج کنیم ، در حقیقت فرقشون رو نمی دونم ، اما من مرج زدم و کانفلیکت نداشت
+
+
+
+
 #### بروز کردن برنچ لوکال قدیمی
 
 زمانی که برنچ مستر یا دولوپ توی لوکالمون خیلی قدیمی باشه و بخواهیم بروز کنیم
