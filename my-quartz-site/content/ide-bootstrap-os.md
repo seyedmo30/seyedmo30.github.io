@@ -999,6 +999,86 @@ sudo apt-get install copyq
 
 ```
 
+### read debug envs
+
+خیلی وقتا کپی env  ها توی launch.sjon vscode  هم باید باشه ، و سینک بودن اینا خیلی درد سره ، با این اسکریپت  از دیباگ می خونیم 
+
+```sh
+
+#!/usr/bin/env bash
+# run.sh - read envs from nearest .vscode/launch.json and run go run main.go
+# Requires: bash, jq
+set -euo pipefail
+
+# -------------------------
+# Configuration / Defaults
+# -------------------------
+CONF_NAME=""   # optional: set with --name "Config Name"
+# -------------------------
+
+die() { echo "ERROR: $*" >&2; exit 1; }
+
+# check dependencies
+if ! command -v jq >/dev/null 2>&1; then
+  die "this script requires 'jq'. Install it (e.g. apt install jq) and retry."
+fi
+
+# find nearest .vscode/launch.json by walking up
+find_launch() {
+  local cur="$PWD"
+  while true; do
+    if [ -f "$cur/.vscode/launch.json" ]; then
+      printf '%s' "$cur/.vscode/launch.json"
+      return 0
+    fi
+    [ "$cur" = "/" ] && break
+    cur=$(dirname "$cur")
+  done
+  return 1
+}
+
+LAUNCH="$(find_launch)" || die ".vscode/launch.json not found in this or parent directories"
+
+# Build a function that emits key\0value\0 pairs (NUL-separated)
+emit_key_val_nul() {
+  # remove lines that start (possibly after whitespace) with //
+  if [ -n "$CONF_NAME" ]; then
+    sed -E 's/^[[:space:]]*\/\/.*$//' "$LAUNCH" \
+      | jq -r --arg name "$CONF_NAME" '
+          (.configurations[] | select(.name == $name) | .env // {})
+          | to_entries[]
+          | "\(.key|tostring|gsub("^\\s+|\\s+$";""))\u0000\(.value|tostring|gsub("^\\s+|\\s+$";""))\u0000"
+        ' -
+  else
+    sed -E 's/^[[:space:]]*\/\/.*$//' "$LAUNCH" \
+      | jq -r '
+          (.configurations[0].env // {})
+          | to_entries[]
+          | "\(.key|tostring|gsub("^\\s+|\\s+$";""))\u0000\(.value|tostring|gsub("^\\s+|\\s+$";""))\u0000"
+        ' -
+  fi
+}
+
+# Load envs into this shell
+while IFS= read -r -d '' key && IFS= read -r -d '' val; do
+  key="$(echo -n "$key" | xargs)"   # trim extra whitespace, just in case
+  val="$(echo -n "$val" | xargs)"
+  if [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+    export "$key"="$val"
+  else
+    echo "⚠️  Skipping invalid env key: '$key'"
+  fi
+done < <(emit_key_val_nul)
+
+echo "✅ Loaded environment variables from: $LAUNCH"
+echo "🚀 Running: go run main.go"
+echo
+
+exec go run main.go
+
+```
+
+
 # bootstrap os
 
  
