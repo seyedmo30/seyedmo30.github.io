@@ -834,7 +834,7 @@ sudo apt-get install copyq
         "when": "editorHasDefinitionProvider && editorTextFocus && isWeb"
     },
     {
-        "key": "ctrl+o",
+        "key": "ctrl+u",
         "command": "editor.action.goToReferences",
         "when": "editorHasReferenceProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor"
     },
@@ -844,7 +844,7 @@ sudo apt-get install copyq
         "when": "editorHasReferenceProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor"
     },
     {
-        "key": "ctrl+o",
+        "key": "ctrl+u",
         "command": "goToPreviousReference",
         "when": "inReferenceSearchEditor || referenceSearchVisible"
     },
@@ -874,7 +874,7 @@ sudo apt-get install copyq
         "when": "remoteFileDialogVisible"
     },
     {
-        "key": "ctrl+u",
+        "key": "ctrl+o",
         "command": "editor.action.revealDefinition",
         "when": "editorHasDefinitionProvider && editorTextFocus"
     },
@@ -1079,6 +1079,84 @@ exec go run main.go
 ```
 
 
+### dynamic title merge request by last commit :
+
+وقتی یه برنچ جدید میسازیم ، تایتل اون همیشه اولین کامیت هست و باید دستی تغییرش بدیم ، ولی با این اسکریپت می شه همیشه متنش رو متناسب با آخرین کامیت ، آپدیت کرد 
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+API="https://git.srxx.org/api/v4"
+TOKEN="${GITLAB_TOKEN:-}"
+
+# --- Validation ---
+if [[ -z "$TOKEN" ]]; then
+  echo "❌ GITLAB_TOKEN is not set"
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "❌ jq not installed"
+  exit 1
+fi
+
+# --- Detect project path from git remote ---
+REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+if [[ -z "$REMOTE_URL" ]]; then
+  echo "❌ Could not detect git remote"
+  exit 1
+fi
+
+# Extract project path (works for SSH and HTTPS)
+case "$REMOTE_URL" in
+  ssh://git@*/* ) PROJECT_PATH="${REMOTE_URL#ssh://git@*/}" ;;
+  git@*:* )      PROJECT_PATH="${REMOTE_URL#*:}" ;;
+  http*://* )    PROJECT_PATH="${REMOTE_URL#*git.srxx.org/}" ;;
+  * )            echo "❌ Unrecognized remote URL format: $REMOTE_URL"; exit 1 ;;
+esac
+
+PROJECT_PATH="${PROJECT_PATH%.git}"
+echo "🔍 Searching project: $PROJECT_PATH"
+
+# --- Get project ID dynamically ---
+PROJECT_ID=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
+  "$API/projects?search=$(basename $PROJECT_PATH)" | jq -r \
+  ".[] | select(.path_with_namespace==\"$PROJECT_PATH\") | .id")
+
+if [[ -z "$PROJECT_ID" ]]; then
+  echo "❌ Could not find project ID for '$PROJECT_PATH'"
+  exit 1
+fi
+
+echo "✅ Found project ID: $PROJECT_ID"
+
+# --- Fetch info ---
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+LAST_COMMIT_MSG=$(git log -1 --pretty=%s)
+
+# --- Fetch merge requests for current branch ---
+RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
+  "$API/projects/$PROJECT_ID/merge_requests?state=all&source_branch=$BRANCH")
+
+MR_IID=$(echo "$RESPONSE" | jq -r '.[0].iid // empty')
+
+if [[ -z "$MR_IID" ]]; then
+  echo "❌ No merge request found for branch '$BRANCH'"
+  echo "🔍 Raw API output:"
+  echo "$RESPONSE"
+  exit 1
+fi
+
+# --- Update MR title ---
+curl -s --request PUT \
+  --header "PRIVATE-TOKEN: $TOKEN" \
+  --data-urlencode "title=$LAST_COMMIT_MSG" \
+  "$API/projects/$PROJECT_ID/merge_requests/$MR_IID" >/dev/null
+
+echo "✅ Updated MR !$MR_IID title → \"$LAST_COMMIT_MSG\""
+
+```
 # bootstrap os
 
  
