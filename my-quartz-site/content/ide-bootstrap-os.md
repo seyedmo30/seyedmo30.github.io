@@ -1158,7 +1158,101 @@ echo "✅ Updated MR !$MR_IID title → \"$LAST_COMMIT_MSG\""
 
 ```
 # bootstrap os
+### env
 
+```
+ZSH=/home/mo30/.oh-my-zsh
+GOPATH=/home/mo30/go
+GOPRIVATE=git.srxx.org
+GITLAB_TOKEN=glpat-***
+SHELL=/usr/bin/zsh
+
+```
+
+### zsh
+
++ which zsh
+
+`/usr/bin/zsh`
+
+
++  nano ~/.zshrc
+
+```
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+source $ZSH/oh-my-zsh.sh
+plugins=(
+  git
+  docker
+  ssh-agent
+  z
+  sudo
+  history
+  extract
+  colored-man-pages
+)
+
+```
+
++ در نهایت برای اعمال
+
+`source ~/.zshrc`
+
+### tmux
+
+### gitlab
+
++ اول بهتره کلید گیت با کلید ssh  ایمیل یکی داشته باشن
+
+```
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+ssh-keygen -t ed25519 -C "you@example.com"
+```
+
++ باید توی گیت لب این رو اضافه کنید 
+
+`cat ~/.ssh/id_ed25519.pub`
+
+
++ اگر ssh  بزنید باید پاسخ بگیرید :
+
+`ssh -T  git@git.srxx.org `
+
+Welcome to GitLab, @mo30.developer!
+
+
+
+
++ باید توی کافیگ اضافه کنید
+
+`nano ~/.ssh/config`
+
+```
+
+Host git.srxx.org
+    HostName 157.180.85.51
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyCommand /usr/bin/nc -x 127.0.0.1:1080 %h %p
+
+```
+
++ کانفیگ گیت 
+
+`cat ~/.gitconfig`
+
+```
+[user]
+        name = mo30
+        email = mo30.developer@gmail.com
+        signingkey = ******
+[commit]
+        gpgsign = true
+[url "ssh://git@git.srxx.org/"]
+        insteadOf = https://git.srxx.org/
+```
  
  ### music
 + Audacious
