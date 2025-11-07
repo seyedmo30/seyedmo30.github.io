@@ -62,6 +62,7 @@ bookmarks - برای علامت زدن روی کدی که مهمه در یه ف�
 
 `~/.config/Code/User/keybindings.json`
 
+```
 
 // Place your key bindings in this file to override the defaultsauto[]
 [
