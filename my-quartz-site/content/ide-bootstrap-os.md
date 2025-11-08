@@ -12,6 +12,15 @@ Prettier - Code formatter --- ext install esbenp.prettier-vscode
 
 bookmarks - برای علامت زدن روی کدی که مهمه در یه فایل بزرگ
 
+streetsidesoftware.code-spell-checker  غلط املایی
+
+AMiner.codegeex  - اتو کامپلیت چینی
+
+ RobertOstermann.inline-parameters-extended     -   نام هر پارام توی فانکشن ها کمرنگ می نویسه
+
+finntenzor.change-case   -   برای تغییر pascal case to camel case  باید ابتدا پکیج زیر رو نصب کنید
+
+
 ## keymap shortcuts
 
 + go to definition (ctrl + shit + click)
@@ -51,12 +60,6 @@ bookmarks - برای علامت زدن روی کدی که مهمه در یه ف�
 برای debug توی main.go 
 #### ...... project/.vscode/launch.json 
 
-
-
-برای تغییر pascal case to camel case  باید ابتدا پکیج زیر رو نصب کنید
-
-
-`finntenzor.change-case`
 
 #### key map
 
@@ -1070,6 +1073,7 @@ echo
 
 exec go run main.go
 
+
 ```
 
 
@@ -1078,6 +1082,7 @@ exec go run main.go
 وقتی یه برنچ جدید میسازیم ، تایتل اون همیشه اولین کامیت هست و باید دستی تغییرش بدیم ، ولی با این اسکریپت می شه همیشه متنش رو متناسب با آخرین کامیت ، آپدیت کرد 
 
 ```bash
+
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -1149,6 +1154,8 @@ curl -s --request PUT \
   "$API/projects/$PROJECT_ID/merge_requests/$MR_IID" >/dev/null
 
 echo "✅ Updated MR !$MR_IID title → \"$LAST_COMMIT_MSG\""
+
+
 
 ```
 # bootstrap os
