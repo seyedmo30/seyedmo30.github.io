@@ -310,3 +310,116 @@ func createClient(dsn string) (*sql.DB, error) {
 
 همچنین اگر برایاستراکت خروجی اسم نزاریم ، مجبوریم اون رو تعریف کنیم ، پس چه بهتره که تو امضای فانکشن اسم داشته باشه و تنها **return** رو برای خروجی بنویسیم
 
+
+
+### http request 
+
+یه سری تنظیمات هستن که میخوایم یه api call کنیم به دردمون میخوره
+
++ http
+
+این بخش بیشتر تنظیمات این لایه هست مثل متد و بدنه و ..
+
+req.do()
+
++ tcp
+
+زمانی که یه client , transport میسازیم ، در حقیقت داریم تنظیمات این لایه رو میسازیم ، دقت کنیم این ها قابل استفاده مجدد هستن و خیلی به سربار کمک میکنه
+
+اگر یه یه بادی رو کامل بخونیم و در نهایت کلوز کنیم ، نیاز  به کانکشن tcp  جدید نیست ، مطالعه شود کانفیگ های کلاینت و ترنسپورت
+
+```go
+package httpclient
+
+import (
+    "bytes"
+    "context"
+    "errors"
+    "io"
+    "io/ioutil"
+    "net"
+    "net/http"
+    "sync"
+    "time"
+)
+
+// Config برای تنظیمات عمومی
+
+
+
+type Config struct {
+    Timeout time.Duration
+    MaxIdleConns      int
+    MaxIdleConnsPerHost int
+    IdleConnTimeout   time.Duration
+    RetryCount        int
+    RetryWait         time.Duration
+}
+
+// Client یک struct است که ماژول را نمایندگی می‌کند
+type Client struct {
+    httpClient http.Client
+    retryCount int
+    retryWait  time.Duration
+    mu         sync.Mutex
+}
+
+// NewClient ساختن یک کلاینت با تنظیمات Config
+func NewClient(cfg Config) Client {
+    transport := &http.Transport{
+        DialContext: (&net.Dialer{
+            Timeout:   30  time.Second,
+            KeepAlive: 30  time.Second,
+        }).DialContext,
+        MaxIdleConns:        cfg.MaxIdleConns,
+        MaxIdleConnsPerHost: cfg.MaxIdleConnsPerHost,
+        IdleConnTimeout:     cfg.IdleConnTimeout,
+        TLSHandshakeTimeout: 10  time.Second,
+        // ForceAttemptHTTP2: true – اگر بخوای HTTP/2 فعال کنیم
+    }
+    httpClient := &http.Client{
+        Transport: transport,
+        Timeout:   cfg.Timeout,
+    }
+    return &Client{
+        httpClient: httpClient,
+        retryCount: cfg.RetryCount,
+        retryWait:  cfg.RetryWait,
+    }
+}
+
+// DoRequest اجرا یک درخواست HTTP (GET / POST یا هر متد) با retry ساده
+func (c Client) DoRequest(ctx context.Context, method, url string, body []byte, headers map[string]string) ([]byte, error) {
+    var lastErr error
+    for attempt := 0; attempt <= c.retryCount; attempt++ {
+        req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(body))
+        if err != nil {
+            return nil, err
+        }
+        for k, v := range headers {
+            req.Header.Set(k, v)
+        }
+
+        resp, err := c.httpClient.Do(req)
+        if err != nil {
+            lastErr = err
+            // اگر خطای شبکه بود، می‌خوای retry کنی
+        } else {
+            defer resp.Body.Close()
+            data, err2 := ioutil.ReadAll(resp.Body)
+            if err2 != nil {
+                lastErr = err2
+            } else if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+                return data, nil
+            } else {
+                lastErr = errors.New("non-2xx status: " + resp.Status)
+            }
+            // قبل از retry، می‌تونی یه io.Copy(io.Discard, body) بکنى اگر لازم باشه برای reuse
+        }
+
+        // اگر میخوای قبل از تلاش بعدی صبر کنی:
+        time.Sleep(c.retryWait)
+    }
+    return nil, lastErr
+}
+```

@@ -1274,6 +1274,8 @@ Host git.srxx.org
 
 + sudo apt install playerctl
 
++ sudo apt install pulseaudio-utils -y
+
 میشه با این پکیج کوچیک hot key  اضافه کرد
 
 و در نهایت باید توی کاستوم ها ، اینا رو ست کنیم
@@ -1283,11 +1285,11 @@ Host git.srxx.org
 فایل زیر باید لود بشه 
 ```
 [/]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/']
 
 [custom-keybindings/custom0]
 binding='<Control><Alt>KP_Multiply'
-command='playerctl -p audacious play-pause\n'
+command='playerctl -p audacious play-pause'
 name='Pause Audacious'
 
 [custom-keybindings/custom1]
@@ -1297,28 +1299,31 @@ name='Next Audacious'
 
 [custom-keybindings/custom2]
 binding='<Control><Alt>KP_Subtract'
-command='prevus Audacious'
+command='playerctl -p audacious previous'
 name='prevus Audacious'
 
 [custom-keybindings/custom3]
-binding='<Control><Alt>KP_Home'
+binding='<Control><Alt>KP_Left'
 command='playerctl -p audacious position 10-'
 name='Rewind 10s'
 
 [custom-keybindings/custom4]
-binding='<Control><Alt>KP_Page_Up'
+binding='<Control><Alt>KP_Right'
 command='playerctl -p audacious position 10+'
 name='Forward 10s'
+
+[custom-keybindings/custom5]
+binding='<Control><Alt>KP_Up'
+command='pactl set-sink-volume @DEFAULT_SINK@ +5%'
+name='Volume Up'
+
+[custom-keybindings/custom6]
+binding='<Control><Alt>KP_Down'
+command='pactl set-sink-volume @DEFAULT_SINK@ -5%'
+name='Volume Down'
 ```
 
 ### clipboard
 
-+ copyq
-
-```
-sudo apt-add-repository ppa:arindam/debugpoint
-sudo apt-get update
-sudo apt-get install copyq
-```
 
 + diodon
