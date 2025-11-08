@@ -1210,6 +1210,17 @@ ssh-keygen -t ed25519 -C "you@example.com"
 `cat ~/.ssh/id_ed25519.pub`
 
 
++ حتما سطح دسترسی رو تنظیم کنید
+
+```
+sudo chown mo30:mo30 /home/mo30/.ssh/config
+sudo chmod 600 /home/mo30/.ssh/config
+sudo chmod 700 /home/mo30/.ssh    
+sudo chmod 600 /home/mo30/.ssh/id_rsa   
+sudo chmod 644 /home/mo30/.ssh/id_rsa.pub
+```
+
+
 + اگر ssh  بزنید باید پاسخ بگیرید :
 
 `ssh -T  git@git.srxx.org `
