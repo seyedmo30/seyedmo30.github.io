@@ -1276,6 +1276,40 @@ Host git.srxx.org
 
 میشه با این پکیج کوچیک hot key  اضافه کرد
 
+و در نهایت باید توی کاستوم ها ، اینا رو ست کنیم
+
+`dconf load /org/gnome/settings-daemon/plugins/media-keys/ < media-keys-backup.dconf`
+
+فایل زیر باید لود بشه 
+```
+[/]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/']
+
+[custom-keybindings/custom0]
+binding='<Control><Alt>KP_Multiply'
+command='playerctl -p audacious play-pause\n'
+name='Pause Audacious'
+
+[custom-keybindings/custom1]
+binding='<Control><Alt>KP_Add'
+command='playerctl -p audacious next\n'
+name='Next Audacious'
+
+[custom-keybindings/custom2]
+binding='<Control><Alt>KP_Subtract'
+command='prevus Audacious'
+name='prevus Audacious'
+
+[custom-keybindings/custom3]
+binding='<Control><Alt>KP_Home'
+command='playerctl -p audacious position 10-'
+name='Rewind 10s'
+
+[custom-keybindings/custom4]
+binding='<Control><Alt>KP_Page_Up'
+command='playerctl -p audacious position 10+'
+name='Forward 10s'
+```
 
 ### clipboard
 
