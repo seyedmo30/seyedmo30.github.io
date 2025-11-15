@@ -1,0 +1,12 @@
+/* reset-quartz.css — neutralize a few Quartz-specific global rules */
+html, body {
+  all: initial;          /* very aggressive — use only if safe */
+  font-family: 'Roboto', sans-serif; /* bring back fonts you want */
+  background-color: #fff;
+  color: #222;
+}
+
+/* less aggressive alternative: namespace resets only */
+.quartz-root, .quartz-header, .quartz-main {
+  all: unset;
+}
