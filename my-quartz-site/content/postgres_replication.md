@@ -42,80 +42,87 @@
 
 
 
-\c db
 
+---
+
+## پیکربندی نمونه و دستورات مفید
+
+> این بخش شامل snippetهای عملی برای `postgresql.conf`, `pg_hba.conf`, ایجاد publication/subscription، و کار با replication slots است.
+
+### 1) نمونه‌های پیکربندی در `postgresql.conf`
+
+```conf
+# فعال‌سازی logical replication
 wal_level = logical
+# تعداد اسلات‌های replication
+max_replication_slots = 5
+# تعداد senders برای streaming
+max_wal_senders = 10
+# (اختیاری) کاهش latency در sync replication
+synchronous_commit = remote_write
+```
 
-listen_addressess = "*" '*'
+### 2) نمونهٔ ورودی در `pg_hba.conf`
 
+```conf
+# اجازه به کاربر replicauser برای اتصال replication از IP مشخص
+host    replication    replicauser     192.168.10.10/32   scram-sha-256
+# یا اگر می‌خواهی publish/subscription از راه دور به DB عادی
+host    sampledb       replicauser     192.168.10.10/32   scram-sha-256
+```
 
-pg_hba.conf
+### 3) ساخت Publication / Subscription (logical replication)
 
-host    sampledb    replicauser     192.168.10.10/32   scram-sha-256
-
-
+```sql
+-- ایجاد publication برای یک جدول
 CREATE PUBLICATION bookpub FOR TABLE book;
 
+-- ایجاد publication برای همهٔ جداول
 CREATE PUBLICATION my_publication FOR ALL TABLES;
 
+-- در subscriber (روی سرور مقصد)
+CREATE SUBSCRIPTION booksub
+  CONNECTION 'dbname=sampledb host=192.168.10.5 user=replicauser password=secret port=5432'
+  PUBLICATION bookpub;
 
-
-CREATE SUBSCRIPTION booksub CONNECTION 'dbname=sampledb host=192.168.10.5 user=replicauser password=12345 port=5432' PUBLICATION bookpub
-
-
-
-select * from pg_catalog.pg_publication;  
-
-\dRp+
-
-
-
-
-select * from pg_catalog.pg_subscription;
-
-\dRs+
-
-
-
-select * from pg_replication_slots ;
-
-select pg_drop_replication_slot('booksub');
-
-
+-- مدیریت
 ALTER SUBSCRIPTION booksub DISABLE;
-ALTER SUBSCRIPTION booksub SET (slot_name=NONE);
+ALTER SUBSCRIPTION booksub SET (slot_name = NONE);
 DROP SUBSCRIPTION booksub;
+DROP PUBLICATION bookpub;
+```
 
+### 4) کار با replication slots
 
-DROP publication bookpub ;
-
-
----------------------------------------------------------
-
-postgresql.conf
-
-wal_level = logical
-max_replication_slots = 5
-max_wal_senders = 10
-
-
-SELECT * FROM pg_create_logical_replication_slot('replication_slot', 'pgoutput');
-
-
+```sql
+-- نمایش اسلات‌ها
 SELECT * FROM pg_replication_slots;
 
+-- ایجاد logical slot با pgoutput
+SELECT * FROM pg_create_logical_replication_slot('replication_slot', 'pgoutput');
 
-psql "dbname=postgres replication=database" -U postgres -h 192.168.13.248 -c "CREATE_REPLICATION_SLOT my_slot3 LOGICAL pgoutput;"
+-- ایجاد physical slot (مثال)
+SELECT * FROM pg_create_physical_replication_slot('phys_slot_1');
 
-psql "dbname=phonebook replication=database" -U postgres -h 192.168.13.248 -c "IDENTIFY_SYSTEM;"
+-- حذف اسلات
+SELECT pg_drop_replication_slot('slot_name');
+```
 
+### 5) ابزارهای جانبی و نمونهٔ connection string برای logical replication
 
+```text
+# connection string برای logical replication (pg_recvlogical / client)
 postgres://pglogrepl:secret@127.0.0.1/pglogrepl?replication=database
 
+# اجرای دستورات psql برای replication
+psql "dbname=postgres replication=database" -U postgres -h 192.168.13.248 -c "CREATE_REPLICATION_SLOT my_slot3 LOGICAL pgoutput;"
+psql "dbname=phonebook replication=database" -U postgres -h 192.168.13.248 -c "IDENTIFY_SYSTEM;"
 
-pg_receivewal (for physical replication)
-https://www.postgresql.org/docs/current/app-pgreceivewal.html
+# ابزارهای رسمی
+pg_receivewal  (برای physical replication)
+pg_recvlogical (برای logical replication)
+# مستندات:
+# https://www.postgresql.org/docs/current/app-pgreceivewal.html
+# https://www.postgresql.org/docs/current/app-pgrecvlogical.html
+```
 
-
- pg_recvlogical (for logical replication).
- https://www.postgresql.org/docs/current/app-pgrecvlogical.html
