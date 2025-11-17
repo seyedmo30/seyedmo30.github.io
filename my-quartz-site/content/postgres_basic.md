@@ -254,7 +254,7 @@ cursor
 
 #### GiST
 + همچنین full-text می‌تواند از GiST استفاده کند (هرچند GIN معمول‌تر است).
-+ مناسب برای داده‌های چندبعدی، بازه‌ای، جغرافیایی و عملیات overlap / nearest.
++ مناسب برای داده‌های چندبعدی، بازه‌ای، جغرافیایی و عملیات overlap / nearest. برای جغرافیایی / هندسی
 
 **tips**
 
@@ -375,7 +375,7 @@ CREATE TABLE users (
 
 
 ## Partitioning
-یعنی تقسیم یک جدول بزرگ به چند جدول کوچک‌تر (partitions) بر اساس یک کلید (مثل تاریخ، id range، list یا hash). از PostgreSQL 10 به بعد declarative partitioning بهتر و رسمی شده.
+ - یعنی تقسیم یک جدول بزرگ به چند جدول کوچک‌تر (partitions) بر اساس یک کلید (مثل تاریخ، id range، list یا hash). از PostgreSQL 10 به بعد declarative partitioning بهتر و رسمی شده.
 
 + Range partitioning:
 

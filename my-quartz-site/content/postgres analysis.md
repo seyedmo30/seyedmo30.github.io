@@ -46,3 +46,51 @@ SELECT
     RANK() OVER(PARTITION BY city ORDER BY salary DESC) AS city_rank
 FROM users;
 ```
+
+
+### ETL / ELT
+
+ETL = Extract → Transform → Load
+
+یعنی داده از منبع گرفته می‌شود → تبدیل می‌شود → وارد warehouse می‌شود.
+
+ELT = Extract → Load → Transform
+
+داده خام لود می‌شود و تبدیل در دیتابیس‌هایی مثل BigQuery/Snowflake انجام می‌شود.
+
+### CDC (Change Data Capture)
+
+راهکار استخراج فقط تغییرات روی دیتابیس، نه کل جدول.
+
++ مبتنی بر WAL (مثلاً PostgreSQL logical decoding)
+
++ مبتنی بر Trigger
+
++ مبتنی بر Query-based polling
+
+### چرا warehouseها معمولاً denormalized هستند؟
+
++ Star Schema 
+ 
+ اسکیما هایی که دینورمالایز هستند یعنی حجم بیشتر میگیرند ولی جویین ندارن
+
++ Snowflake Schema
+
+ اسکیما نورمالایز هستن جویین ها خیلی زیاد و برای آنالیزور  خیلی سخت اما فضا کمتر می خواد و کانسیستنسی بهتر
+
+ 
+
+
+در OLTP (سیستم‌های عملیاتی مثل بانک، فروشگاه، سفارشات) داده‌ها معمولاً Normalized هستند:
+
+کاهش redundancy
+
+جلوگیری از anomalyها
+
+تمرکز بر write performance و consistency
+
+اما در Data Warehouse (DW) هدف کاملاً برعکس است:
+
+ سرعت Query بالا - (Joinهای زیاد کند هستند → پس جدول‌ها تا جای ممکن ساده و یکپارچه نگه داشته می‌شوند).
+
+ تحلیل‌گر بدون فکر کردن به ۱۲ تا join پشت‌سرهم
