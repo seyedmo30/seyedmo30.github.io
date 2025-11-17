@@ -219,6 +219,43 @@ cursor
 
 همچنین می توان ابتدای کوییری explain analize گذاشت و دید که زمان و ترتیب جست و جو در ایندکس ها چقدر است
 
+
+همچنین توجه شود اگر ستونی که تنها ۳ داده مانند "good", "normal", and "bad"  راذخیره می کند ، ایندکس کنیم ، تکرار در ذخیره ایجاد نمی شود
+
+### types of index
+
+#### B-Tree
+
++ مقایسه ترتیبی و محدوده (=, <, >, <=, >=, BETWEEN)
+
++ ترتیب‌سازی و ORDER BY
+
++ ساپورت  LIKE 'prefix%' (فقط اگر الگو با wildcard شروع نشود)
+
++ یونیک -  uniqueness (شاخص‌های یکتا معمولاً بوسیله btree ساخته می‌شوند)
+
++ برای ستون‌های با cardinality خیلی پایین (مثلاً boolean) معمولاً بی‌فایده است.
+
++ معیب :  multicolumn index ترتیب ستون‌ها اهمیت دارد: CREATE INDEX idx ON t (a,b) سریع‌تر برای WHERE a = ? AND b = ? ولی نه لزوماً برای WHERE b = ? تنها.
+
+#### Hash
+
++ فقط برای تطابق دقیق (=) بسیار سریع است.
+
++ کاربرد محدود: فقط equality؛ نه range، نه ordering.
+
+#### GIN (Generalized Inverted Index)
+
+یک ورودی دارد که نشان می‌دهد آن term در کدام ردیف‌ها وجود دارد.
+
++ برای جستجوی full-text بسیار کارا.
+
++ ایندکس سنگین (حجم زیاد)؛ نوشتن (INSERT/UPDATE) کندتر می‌شود.
+
+#### GiST
++ همچنین full-text می‌تواند از GiST استفاده کند (هرچند GIN معمول‌تر است).
++ مناسب برای داده‌های چندبعدی، بازه‌ای، جغرافیایی و عملیات overlap / nearest.
+
 **tips**
 
 دلیل این نام گذاری ، عمق( depth ) این درخت ها ثابت است 
@@ -262,9 +299,6 @@ WHERE CustomerID = 101 AND OrderDate >= '2024-01-15';
 
 
 ```
-
-همچنین توجه شود اگر ستونی که تنها ۳ داده مانند "good", "normal", and "bad"  راذخیره می کند ، ایندکس کنیم ، تکرار در ذخیره ایجاد نمی شود
-
 
 ###  tips
 + تعداد کانکشن به صورت دیفالت ۱۰۰ تا هست و می توان با این دستور لیست و تعداد سرویس هایی که کانت شده اند را دید .
@@ -339,6 +373,35 @@ CREATE TABLE users (
 
 
 
+
+## Partitioning
+یعنی تقسیم یک جدول بزرگ به چند جدول کوچک‌تر (partitions) بر اساس یک کلید (مثل تاریخ، id range، list یا hash). از PostgreSQL 10 به بعد declarative partitioning بهتر و رسمی شده.
+
++ Range partitioning:
+
+ محدوده‌های عددی/تاریخی (مثلاً بر اساس created_at ماهیانه).
+
++ List partitioning:
+
+ مقادیر گسسته (مثلاً country یا region).
+
++ Hash partitioning:
+
+ بر اساس هش، برای توزیع یکنواخت داده.
+
+### adv/disadv
+
++ سرعت بالا - فقط پارتیشن‌های مرتبط را اسکن می‌کند
+
+```sql
+CREATE TABLE events (
+  id bigserial,
+  created_at timestamptz NOT NULL,
+  payload jsonb
+) PARTITION BY RANGE (created_at);
+
+CREATE TABLE events_2025_11 PARTITION OF events FOR VALUES FROM ('2025-11-01') TO ('2025-12-01');
+```
 
 ##  varchar vs char vs nvarchar
  ابتدا باید دانست که  postgre به صورت دیفالت ، utf8 encoding string  رو فرض میگیره
