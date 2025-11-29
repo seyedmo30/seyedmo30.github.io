@@ -112,6 +112,167 @@
 + website
 Pramp or Interviewing.io
 
+
+
+### واژگان تک‌کلمه‌ای (با توضیح کوتاه)
+
+trade-off — «تبادل» بین دو مزیت/محدودیت (مثال: trade-off بین سرعت و حافظه)
+
+performance — کارایی/عملکرد
+
+latency — تأخیر (زمان پاسخ)
+
+throughput — توان عملیاتی (درخواست/ثانیه)
+
+scalability — مقیاس‌پذیری
+
+amortized — هزینه‌ی متوسط در طول زمان (amortized cost)
+
+concurrency — هم‌روندی (هم‌زمانی)
+
+parallelism — موازی‌سازی
+
+bottleneck — گلوگاه
+
+profiling — پروفایل‌گیری (برای پیدا کردن نقاط کند)
+
+benchmarking — ارزیابی عملکرد با معیارها
+
+optimization — بهینه‌سازی
+
+refactor — بازسازی کد بدون تغییر رفتار
+
+regression — برگشت خطا (بعد از تغییر کد)
+
+idempotent — انجام چندباره بدون تغییر نتیجهٔ بیش از بار اول
+
+immutable / immutability — تغییرناپذیریِ داده
+
+memoization — ذخیره نتیجهٔ محاسبات برای عدم تکرار
+
+heap / stack — انواع حافظه/فضاها در برنامه
+
+memory leak — نشت حافظه
+
+garbage collection — جمع‌آوری زباله (حذف حافظهٔ غیرقابل‌استفاده)
+
+deadlock — بن‌بست در قفل‌ها
+
+mutex / semaphore — قفل‌ها/سینکرونایزرها
+
+lock-free — بدون قفل (الگوریتم‌های هم‌روندی)
+
+serialization / deserialization — سریال‌سازی/دِسریال‌سازی
+
+sharding — تقسیم‌بندی داده‌ها بین نودها
+
+partitioning — پارتیشنیگ (همین مفهوم در دیتابیس/پیام)
+
+consistency / eventual consistency — سازگاری/سازگاری نهایی
+
+consensus (Raft / Paxos) — الگوریتم اجماع بین نودها
+
+leader election — انتخاب رهبر در سیستم توزیع‌شده
+
+snapshotting — گرفتن عکس/حالت از داده برای بکاپ یا recovery
+
+rollback — بازگردانی تراکنش/نسخه
+
+ACID — خواص تراکنش (Atomicity, Consistency, Isolation, Durability)
+
+CAP theorem — تئوری تناقض بین Consistency, Availability, Partition tolerance
+
+CQRS — Command Query Responsibility Segregation
+
+microservices — معماری میکروسرویس‌ها
+
+monolith — اپلیکیشن یکپارچه
+
+polyglot persistence — استفاده از دیتاست‌های متفاوت برای نیازهای متفاوت
+
+CI/CD — تحویل و توسعهٔ پیوسته
+
+canary release / blue-green deployment — استراتژی‌های انتشار امن
+
+feature flag — فلگ ویژگی برای فعال/غیرفعال کردن قابلیت‌ها
+
+A/B testing — آزمایش مقایسه‌ای برای ویژگی‌ها
+
+rate limiting / throttling — محدودسازی نرخ درخواست
+
+circuit breaker — الگوی مقاوم در برابر شکست سرویس‌ها
+
+backpressure — بازگرداندن فشار وقتی مصرف‌کننده کندتر است
+
+exponential backoff — افزایش زمان تلاش مجدد به صورت نمایی
+
+debounce / throttle — کنترل فراوانی اجرای توابع (در UI/رویدادها)
+
+hot path / cold path — مسیرهای پردازشی پرتکرار یا کم‌کاربرد
+
+cold start / warmup — زمان شروع سرویس (مخصوصاً در سرورلس)
+
+observability / telemetry — دیده‌پذیری؛ لاگ، متریک، تریسینگ
+
+instrumentation — درج متریک/لاگ برای مانیتورینگ
+
+SLO / SLA / KPI / OKR — اهداف/معیارهای سرویس و تیم
+
+MTTR / MTTF — میانگین زمان بازیابی / میانگین زمان کارکرد تا خرابی
+
+tech debt — بدهی فنی
+
+legacy code — کد قدیمی/مانده
+
+code smell — بو/نشانهٔ طراحی ضعیف
+
+SOLID / DRY / KISS / YAGNI — اصول طراحی نرم‌افزار
+
+###  عبارات کوتاه و برجسته (پاراگراف‌های نمونه برای استفاده)
+
+«ما اینجا بین latency و throughput یه trade-off داریم.»
+
+«برای کاهش latency، می‌تونه کش اضافه کنیم ولی باید cache invalidation رو مدیریت کنیم.»
+
+«قبل از بهینه‌سازی، بهتره با profiling مشخص کنیم که hot path کجاست.»
+
+«پیشنهاد می‌کنم این تغییر رو به‌صورت canary release منتشر کنیم تا ریسک رو کم کنیم.»
+
+«اگه مقیاس زیادی نیاز داریم، باید sharding یا partitioning رو در نظر بگیریم.»
+
+«این API باید idempotent باشه تا مشکلات retry رو حل کنه.»
+
+«برای تحمل خطا بهتر، از circuit breaker و exponential backoff استفاده کنیم.»
+
+«این مسئله مال tech debt هست؛ refactor کوتاه‌مدت ارزش ROI داره.»
+
+«با observability درست — یعنی logs، metrics و traces — می‌تونیم MTTR رو پایین بیاریم.»
+
+«این سرویس الان monolith هست؛ مهاجرت به microservices یه trade-off بین سرعت توسعه و پیچیدگی عملیاتیه.»
+
+چند جملهٔ کوتاه برای مصاحبه
+
+«من معمولاً قبل از هر تغییر بزرگ، یک benchmark می‌گیرم و بعد با profiling شروع به optimization می‌کنم.»
+
+«در پروژه قبلی با استفاده از feature flags تونستیم rollout رو کنترل کنیم و regressionها رو به صفر نزدیک کنیم.»
+
+«وقتی سیستم توزیع‌شده دارید، CAP theorem رو همیشه توی تصمیم‌گیری‌ها مدنظر می‌ذارم.»
+
+«برای cache invalidation روش مناسب انتخاب کردم چون بدون اون stale data داشتیم.»
+
+«برای concurrency از الگوریتم‌های lock-free استفاده کردیم تا contention رو کم کنیم.»
+
+توصیهٔ حرفه‌ای (نحوه‌ی استفاده درست)
+
+از این کلمات فقط برای «نمایش» استفاده نکن — باید معنی‌شون رو بدونی.
+
+وقتی واژه‌ای می‌گی، سریع یک خط توضیح یا مثال واقعی بذار؛ این توابع رو معتبر نشان می‌ده.
+
+هر جا ممکنه عدد/مقدار بیاری: «latency از 200ms شد 50ms» — اثرگذاری بیشتر می‌شه.
+
+از buzzwordهای کلی (مثلاً فقط «optimize») بدون شرح بیشتر پرهیز کن.
+
+
 ### time complexity
 
 + **O(n)**

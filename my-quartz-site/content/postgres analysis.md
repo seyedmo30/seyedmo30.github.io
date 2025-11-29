@@ -401,6 +401,37 @@ LIMIT 10;
 
 ---
 
+برای هر سفارشِ تکمیل‌شده، به‌ازای هر user_id شمارهٔ ترتیبی سفارش را مشخص کنیم (یعنی «این، اولین/دومین/سومین سفارش کاربر X است»). برای این‌کار از ROW_NUMBER() به‌همراه PARTITION BY استفاده می‌کنیم.
+
+```sql
+SELECT
+  id,
+  user_id,
+  created_at,
+  quantity * price AS revenue,
+  ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at) AS order_seq
+FROM orders
+WHERE status = 'completed'
+ORDER BY user_id, order_seq;
+```
+
+ROW_NUMBER()
+
+یک تابع پنجره‌ای (window function) است که به هر ردیف در پنجره یک شمارهٔ یکتا می‌دهد.
+
+OVER (PARTITION BY user_id ORDER BY created_at)
+
+این بخش مشخص می‌کند پنجره چگونه تعریف شود:
+
++ PARTITION BY user_id 
+
+ برای هر کاربر جداگانه شروع به شماره‌گذاری می‌کند (یعنی شمارش از ۱ برای هر user_id جدا می‌شود).
+
++ ORDER BY created_at 
+
+ ترتیب شماره‌گذاری بر اساس زمان ایجاد سفارش است (سفارش‌های قدیمی‌تر شمارهٔ کوچک‌تری می‌گیرند).
+
+---
 ## سوال 10 — رتبه‌بندی کاربران بر اساس هزینه (Window function)
 
 **مسئله:** هر کاربر را بر اساس مجموع هزینه‌شان رتبه‌بندی کن و تعداد کل کاربران و رتبهٔ هر کاربر را نشان بده.
