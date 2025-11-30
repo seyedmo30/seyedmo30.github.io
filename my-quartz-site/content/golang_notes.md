@@ -30,13 +30,22 @@ nano ~/.gitconfig
         insteadOf = https://git.maani.app/
 ```
 
-#### 403 - 443 
+#### 403 - 443  - forbidden
 
 یه سری وقتا یه پکیج نصب نمی شه ، شاید بشه با یه سری فلگ نصب کرد
 
 `GOPROXY=https://proxy.golang.org,direct go get github.com/gin-gonic/gin`
 
 `GODEBUG=netdns=go GOHOST=localhost GOINSECURE=nullprogram.com GONOSUMDB=nullprogram.com GO111MODULE=on go get -v github.com/gin-gonic/gin`
+
+اگر نشد این هم امتحان کنیم :
+
+```
+export GOPROXY=direct  
+export GOSUMDB=off
+
+go mod tidy
+```
 
 #### cobra vs multiple cmd folders
 
