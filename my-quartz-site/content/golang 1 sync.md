@@ -84,6 +84,54 @@ wg.Wait()
 
 نکته: خروجی گوروتین ابتدایی درون یک channel ارسال نمی‌شود تا گوروتین بعدی آن را دریافت کند.
 
+مثال واقعی : فرض کنیم یه گوروتین وظیفش اینه که توی دیتابیس سطر جدید  اضافه کنه و دیگری باید سطر های موجود تو دیتابیس رو جمع بزنه ، حال اگر گوروتین اول به دومی اطلاع ندهد ، گوروتین دوم یا باید تیریگر از دیتابیس بگیره یا حلقه بزنه و پولینگ کنه 
+
+اما راه حل اینه که هر موقع گوروتین اول دیتا ذخیره کرد ، یه سیگنال بده به دومی تا نیاز به پولینگ دیتابیس نباشه
+
+
+مهمترین نکته اینه که به دو روش unlock  داریم ، یا به روش مستقیم یا با استفاده از cond.Wait() 
+
+هر بار wait  کال بشه ، unlock  رخ می ده تا بتونه سیگنال بفرسته
+
+
+```go
+
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+func main() {
+    mu := &sync.Mutex{}
+    cond := sync.NewCond(mu)
+    ready := false
+
+    // --- waiting goroutine ---
+    go func() {
+        mu.Lock()
+        for !ready {
+            cond.Wait()  // releases mu; waits to be signaled
+        }
+        fmt.Println("Ready! Proceeding...")
+        mu.Unlock()
+    }()
+
+    // simulate some work, then signal readiness
+    time.Sleep(2 * time.Second)
+
+    mu.Lock()
+    ready = true
+    cond.Signal()  // wake one waiting goroutine
+    mu.Unlock()
+
+    // give some time for goroutine to print
+    time.Sleep(1 * time.Second)
+}
+
+```
 ---
 
 # sync.Atomic
