@@ -208,6 +208,16 @@ func ParseDepositHistory(jsonBytes []byte) (*APIResponse[DepositHistoryData], er
 }
 ```
 
+خیلی مسخرست اما جنریک ها نمی تونن تا پارامتر های  ریسیور باشن اما می تونن پارامتر متد باشن 
+
+```go
+func ListContains[T comparable](needle T, haystack []T) bool {
+}
+
+// compiler error: method must have no type parameters
+func (u Utils) ListContains[T comparable](needle T, haystack []T) bool {
+}
+```
 ---
 
 ## Overriding (Shadow Method)
