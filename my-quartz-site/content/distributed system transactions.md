@@ -1,105 +1,108 @@
-# دیستریبیوت ترنس اکشن ها
+# دیستریبیوت ترنس‌اکشن‌ها (Distributed Transactions)
 
- دیتابیس پر سرویس:در معماری میکرو سرویس اگر به ازای هر سرویس یک استوریج درونش باشد و از یک استوریج مرکزی استفاده نکنیم از این مفهوم پیروی کردیم - ویژگی : ایزوله ، با توجه به نیاز دیتابیس مورد نظرو انتخاب میکنیم ، اسکیلبل
 
-در معماری دیتابیس پر سرویس باید از یکی از الگو های زیر استفاده کنیم 
 
-### **2pc**  two phase commit 
+## دیتابیس به ازای هر سرویس (Database per Service)
 
-در این روش ، پارت ها باید مطمعن شوند که تراکنش با موفقیت انجام می شود و سپس کامیت کنند . همچنین دپ بخش دارد : 
-+ کوردینیتور  - این سرویس وظیفه ی مدیریت ترنساکشن ها را برعهده دارد .
-+ پارتیسپیت ها - نود های ما هستند
-در این روش ، برای هر تراکنش ، ترنساکشنی باز می شود ولی کامیت نمی کنند . در فاز اول کوردینیتور از همه ی پارت ها می پرسد که می توانید کامیت کنید ، اگر تمام پارت ها مثبت بود ، در فاز دوم به همه می گه کامیت کنید و در صورتی که یک پارت نتواند ، به همه دستور می ده رول بک بزنن .
+در معماری میکروسرویس اگر برای هر سرویس یک Storage جداگانه داشته باشیم و از یک دیتابیس مرکزی استفاده نکنیم، از الگوی "دیتابیس‌-پر-سرویس" پیروی کرده‌ایم.
 
-یک روش ترساکشن در دیتابیس ها است ، در این روش پارتیسیپنت (دیتابیس ها) باید توانایی کامیت کردن و رولبک زدن رو داشته باشند ، این روش خوب نیست چون شاید تو اکوسیستم از nosql استفاده شود و این قابلیت ها را ندتشته باشد 
+* ویژگی‌ها: ایزولیشن، انتخاب دیتابیس متناسب با نیاز سرویس، و قابلیت اسکیل‌پذیری مستقل.
+* نکته: در این معماری باید مکانیزم‌هایی برای هماهنگ‌سازی تراکنش‌های بین سرویس‌ها در نظر گرفته شود.
 
+---
+
+## الگوهای هماهنگی تراکنش‌ها
+
+### Two-Phase Commit (2PC)
+
+در این روش پارت‌ها باید مطمئن شوند که تراکنش با موفقیت انجام می‌شود و سپس کامیت کنند. این الگو شامل دو نقش اصلی است:
+
+* **Coordinator** 
+
+ سرویس مدیر که مدیریت تراکنش را برعهده دارد.
+
+* **Participants** 
+
+ نودهایی که داده را نگهداری یا پردازش می‌کنند.
+
+
+الگوریتم کار به این صورت است که در فاز اول Coordinator از همهٔ Participants می‌پرسد که آیا می‌توانند کامیت انجام دهند؛ اگر همه پاسخ مثبت بدهند، در فاز دوم به همه دستور کامیت ارسال می‌کند، در غیر این صورت دستور رول‌بک صادر می‌شود.
+
+* مزایا: تضمین سازگاری ACID در صورت پشتیبانی کامل از تراکنش‌ها.
+* معایب: پیچیدگی، بن‌بست (blocking) در زمان قطعی، و ناسازگاری با برخی دیتابیس‌های NoSQL که قابلیت prepare/commit ندارند.
+
+---
 
 ### Saga
-Saga اگر بخوهیم اسید را در استوریج خود ، در اسکیل چندین میکرسرویس پیاده سازی کنیم ، از دیزاین پترن ساگا استفاده میکنیم
 
-نکات:
-ساگا در ابتدا خیلی پیچیده است ،  دیباگ در ساگا خیلی دشوار است ، دیتا ها نمی تونن رول بک کنن ، چون همواره در لوکال کامیت میکنن ، طراحی باید به گونه ای باشد که توانایی شناخت ترانس اکشن های تکراری (idempotent)  و شناسایی توالی ترنس اکشن ها را داشته باشد،
+در این الگو تراکنش بلندِ توزیع‌شده به مجموعه‌ای از تراکنش‌های محلی تقسیم می‌شود که هر کدام در سرویس مربوطه به‌صورت محلی کامیت می‌شوند.
 
-و دو روش برای پیاده سازی این الگو هست:
+* نکته: ساگا برای حفظ ACID به‌صورت سنتی مناسب نیست اما الگوی مناسبی برای مقیاس‌پذیری و تحمل خطا است.
+* مسئله: دیباگ و تست ساگا دشوار است و نیاز به طراحی برای idempotency و تشخیص توالی تراکنش‌ها دارد.
 
-+ Orchestration - متمرکز
-  
-یک ابزار یا سرویس در مرکز میکروسرویس وجود دارد و تمام سرویس ها باید با این هسته مرکزی سینک باشند و ایونت هاشون رو اونجا بفرستن - 
+#### روش‌های پیاده‌سازی Saga
 
-خیلی خیلی شبیه به یوزکیس در تعریف معماری کلین است به این معنی  که توالی انجام یک کار را پیگیری می کند و در صورت موفقیت آمیز بودن مانند استیت ماشین جلو میره و در صورت خرابی میبایست مراحلی که تغییر داده را یکی یکی compensate  کنهمثلن اگر در مرحله اول خطا رخ داد تنها خطا رو برگردونه ، اما اگر در مرحله ی سوم خطا رخ داد باید ۲ مرحله ی قبلی رو compensate کنه و بعد خطا رو بگه
+* **Orchestration (متمرکز):** یک سرویس ارکستریتور مسئول ترتیب اجرای مراحل است و در صورت خطا مراحل جبران‌کننده (compensating actions) را اجرا می‌کند.
 
-مثلن اگر سرویسی به نام پرداخت داریم و سرویسی به نام انبار داریم
+  * مزایا: مناسب برای workflowهای پیچیده؛ مشارکت‌کننده‌ها نیازی به شناخت یکدیگر ندارند.
+  * معایب: ارکستریتور تایت‌کاپل با همه تغییرات می‌شود و تک‌نقطهٔ شکست بالقوه است.
 
-اگر بخواهیم از این الگو استفاده کنیم باید یه سرویس داشته باشیم که این ها رو مدیریت کنه و اسمش سفارش باشه و الگو ی orchestrator  رو پیاده کنه
+* **Choreography (رقص / توزیعی):** هر سرویس با فرستادن و شنیدن ایونت‌ها تصمیم به ادامه یا جبران می‌گیرد؛ هیچ ارکستریتور مرکزی وجود ندارد.
 
-همچنین در این الگو باید سرویس های زیر دست یا داون استریم ها هم اینترفیسی به آپ استریم بدن به نام conpensate و پیش بینی کنن هر ایونت شاید بخواد کنسل بشه
+  * مزایا: سبک و مناسب برای سرویس‌های کوچک؛ وابستگی مستقیم به سرویس مرکزی حذف می‌شود.
+  * معایب: پیچیدگی نگهداری، دشواری در تست انتها‌به‌انتها و افزایش پیچیدگی با مقیاس سیستم.
 
-**مزایا**
+---
 
-:برای ورکفلو های بزرگ خوبه ، participate ها نیازی ندارند down-stream هارو بشناسن ، تنها باید ایونت به کوردینیتور بفرستن ، 
+## مقایسهٔ Saga و 2PC
 
-**معایب**
+| معیار      |                                           Saga |                                             2PC |
+| ---------- | ---------------------------------------------: | ----------------------------------------------: |
+| زمان کامیت |               هر جزء به‌صورت محلی کامیت می‌کند |           کل کامیت پس از توافق همه انجام می‌شود |
+| پیچیدگی    | نیاز به طراحی برای idempotency و compensations | نیاز به پشتیبانی prepare/commit در participants |
+| تحمل خطا   |          با compensating actions مدیریت می‌شود |        ممکن است به blocking و deadlock منجر شود |
 
-شاید سرویس های داون استریم ه لوس کاپل باشن نسبت به هم اما به ارکستریتور تایت کاپل هستند و با هر تغییر باید اورکستریتور هم تغییر کند
+---
 
-+ choreography - رقص
-  
-در این حالت هر تغییر باید به سرویس هایی که وابسته به تراکنش هست گفته شود و در صورت ارور بفهمن
+## Event Sourcing
 
-در حقیقت با ارسال ایونت یا مسیج با تریگر، به پارتیسپت ها میگن که موفق بوده یا با خطا مواجه شده
+در این روش تغییرات به‌صورت سری از ایونت‌ها ذخیره می‌شوند و به‌جای آپدیت/دیلیت مستقیم، ایونت‌ها append می‌شوند. ترتیب ایونت‌ها اهمیت بسیار زیادی دارد.
 
-می تونیم بگیم این event driven  هست 
-**مزایا**:
+* نکته: Event Sourcing معمولاً همراه با CQRS استفاده می‌شود تا خواندن و نوشتن از هم جدا شوند.
 
- برای سرویسای کوچیک خوبه ، نیازی به یه سرویس دیگه نیست
+---
 
-**مشکلات**:
+## Distributed Transactions در دیتابیس‌های مدرن
 
-شاید خیلی مدیریت و نگه داریش سخت باشه ، تست کردنش خیلی سخته چون همه باید آپ باشن ، به مرور پیچیده تر میشه
+در برخی دیتابیس‌های جدید امکاناتی برای پشتیبانی از تراکنش توزیع‌شده یا شبه-تراکنش‌های توزیع‌شده فراهم شده است؛ این رویکرد پیچیدگی هماهنگی را از لایهٔ معماری به خود دیتابیس منتقل می‌کند.
 
+* نکته: استفاده از چنین قابلیت‌هایی ممکن است ساده‌سازی توسعه را بیاورد ولی وابستگی به ویژگی‌های خاص دیتابیس را افزایش می‌دهد.
 
-شاید دیگه نیازی به سرویس مرکزی وجود نداشته باشه اما 
+---
 
-#### تفاوت saga و 2pc
-در ساگا ترنساکشن در هر پارتیس انجام می شه ، ایونت یا مسیج با تریگر به پاریسی بعدی می ده ، در حالی که در 2pc  کامیت نمی کنه و منتظر پارتیس می مونه و در صورت تایید کامیت میکنه
+## مزایای Database per Service — جمع‌بندی
 
-علاوه بر saga , 2pc دو مورد زیر هم هست
+* ایزولیشن داده و مالکیت سرویس روی دیتای خودش.
+* انتخاب تکنولوژی دیتابیس مناسب برای نیاز هر سرویس.
+* مقیاس‌پذیری مستقل هر سرویس.
 
-### **event sourcing** 
+---
 
-در این روش تغییرات به صورت سری در دیتا بیس تنها ایجاد میشود ، به این صورت هیچ دستور آپدیت یا دیلیت در دیتابیس وجود ندارد بلکه ایونت ها ذخیره میشوند ، توجه داشته باشید ترتیب بسیار مهم است
+## مثال: پیاده‌سازی Saga (Orchestration) — شبیه‌سازی با Go
 
-### **distributed transactions**
-
-دیتابیس های جدید ، این قابلیت رو به خودشون اضافه میکنند ، در حقیقت پیچیدگی معماری رو حذف میکنیم و پیچیدگی رو به کار با این قابلیت دیتابیس ها میبریم
-
-
-### database per service
-
-در معماری database per service باید از یکی از الگو های زیر استفاده کنیم
-
-database per service benefit : ایزوله ، با توجه به نیاز دیتابیس مورد نظرو انتخاب میکنیم ، اسکیلبل
-
-
-
-
-### یه مثال شبیه سازی شده از saga Orchestration ولی با chatgpt
-
-ساگا در ساختار تیبل ها تغییری ایجاد نمی کند ، یا فیلدی اضافه نمی کند ، بلکه یک رویکرد است و سرویس ساگا کوردینیتور باید با ارسال دستور به میکروسرویس ها ، آن ها را به مرحله ی بعد ببرد یا رول بک بزنند
-
-در حقیقت باید هر میکرو سرویس ،قابلیت رول بک داشته باشه مثلن اگر داشته باشیم ثبت سفارش ، باید همچنین داشته باشیم کامپنسیت سفارش 
-
-در یک مثال chatgpt
+در این مثال یک Orchestrator ساده داریم که مراحل ثبت سفارش، رزرو موجودی و پردازش پرداخت را پشت سر هم اجرا می‌کند و در صورت خطا مراحل جبران‌کننده را فراخوانی می‌کند.
 
 ```go
-
 package main
 
 import (
     "bytes"
     "encoding/json"
+    "errors"
     "fmt"
+    "io"
     "net/http"
+    "time"
 )
 
 type OrderRequest struct {
@@ -121,16 +124,8 @@ type PaymentRequest struct {
 }
 
 func main() {
-    order := OrderRequest{
-        OrderID:    1,
-        UserID:     1,
-        ProductID:  1,
-        Quantity:   2,
-        TotalPrice: 200.00,
-    }
-
-    err := createOrderSaga(order)
-    if err != nil {
+    order := OrderRequest{OrderID: 1, UserID: 1, ProductID: 1, Quantity: 2, TotalPrice: 200.00}
+    if err := createOrderSaga(order); err != nil {
         fmt.Printf("Saga failed: %v\n", err)
     } else {
         fmt.Println("Saga completed successfully")
@@ -138,74 +133,102 @@ func main() {
 }
 
 func createOrderSaga(order OrderRequest) error {
-    // Step 1: Create Order
     if err := createOrder(order); err != nil {
         return err
     }
 
-    // Step 2: Reserve Inventory
     if err := reserveInventory(order.ProductID, order.Quantity); err != nil {
-        compensateOrder(order.OrderID)
+        if derr := compensateOrder(order.OrderID); derr != nil {
+            return fmt.Errorf("reserve failed: %v, compensate failed: %v", err, derr)
+        }
         return err
     }
 
-    // Step 3: Process Payment
     if err := createPayment(order.OrderID, order.TotalPrice); err != nil {
-        compensateInventory(order.ProductID, order.Quantity)
-        compensateOrder(order.OrderID)
+        if derr := compensateInventory(order.ProductID, order.Quantity); derr != nil {
+            _ = compensateOrder(order.OrderID)
+            return fmt.Errorf("payment failed: %v, compensate inventory failed: %v", err, derr)
+        }
+        if derr := compensateOrder(order.OrderID); derr != nil {
+            return fmt.Errorf("payment failed: %v, compensate order failed: %v", err, derr)
+        }
         return err
     }
 
-    // All steps succeeded
     return nil
 }
 
 func createOrder(order OrderRequest) error {
-    orderURL := "http://order-service/orders"
-    return sendRequest("POST", orderURL, order)
+    return sendRequest("POST", "http://order-service/orders", order)
 }
 
 func reserveInventory(productID, quantity int) error {
-    inventoryURL := "http://inventory-service/inventory"
     req := InventoryRequest{ProductID: productID, Quantity: quantity}
-    return sendRequest("POST", inventoryURL, req)
+    return sendRequest("POST", "http://inventory-service/inventory", req)
 }
 
 func createPayment(orderID int, amount float64) error {
-    paymentURL := "http://payment-service/payments"
     req := PaymentRequest{OrderID: orderID, Amount: amount}
-    return sendRequest("POST", paymentURL, req)
+    return sendRequest("POST", "http://payment-service/payments", req)
 }
 
-func compensateOrder(orderID int) {
-    orderURL := fmt.Sprintf("http://order-service/orders/%d", orderID)
-    sendRequest("DELETE", orderURL, nil)
+func compensateOrder(orderID int) error {
+    url := fmt.Sprintf("http://order-service/orders/%d", orderID)
+    return sendRequest("DELETE", url, nil)
 }
 
-func compensateInventory(productID, quantity int) {
-    inventoryURL := "http://inventory-service/inventory/compensate"
+func compensateInventory(productID, quantity int) error {
     req := InventoryRequest{ProductID: productID, Quantity: quantity}
-    sendRequest("POST", inventoryURL, req)
+    return sendRequest("POST", "http://inventory-service/inventory/compensate", req)
 }
 
 func sendRequest(method, url string, body interface{}) error {
-    jsonBody, err := json.Marshal(body)
+    var bodyReader io.Reader
+    if body != nil {
+        b, err := json.Marshal(body)
+        if err != nil {
+            return err
+        }
+        bodyReader = bytes.NewReader(b)
+    }
+
+    req, err := http.NewRequest(method, url, bodyReader)
     if err != nil {
         return err
     }
+    req.Header.Set("Content-Type", "application/json")
 
-    req, err := http.NewRequest(method
+    client := &http.Client{Timeout: 5 * time.Second}
+    resp, err := client.Do(req)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
 
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+        return nil
+    }
+
+    // خواندن بادی جهت لاگ یا خطای معنی‌دار
+    respBody, _ := io.ReadAll(resp.Body)
+    return errors.New(fmt.Sprintf("request to %s failed: status=%d body=%s", url, resp.StatusCode, string(respBody)))
+}
 ```
 
+* نکته: هر میکروسرویس باید endpointهای مناسب برای عملیات جبران‌کننده (compensate) فراهم کند.
 
+---
 
+## منطق شناسهٔ درخواست (Request ID) در بیزینس
 
+در سیستم‌های پراکند، استفاده از یک شناسهٔ یکتا برای هر درخواست به دلایل زیر مهم است:
 
-# لاجیک شناسه درخواست تو بیزنس
+* جلوگیری از پردازش دوبارهٔ درخواست‌ها (idempotency).
+* امکان ردیابی جریان درخواست در سراسر سرویس‌ها (tracing).
+* تسهیل پاسخ‌دهی آسنکرون: سرور می‌تواند یک کد رهگیری به کلاینت بدهد تا وضعیت را پیگیری کند.
 
-چرا کد رهگیری؟؟ به چه دردی میخوره؟؟  فرقش با شناسه درخواست چیه؟ یکی از دعوا های تیم open banking با loan سر همین بود  ، وقتی یه کلاینت داریم ، یه سرور  ، یکیشون درخواست میده ، یکی شاید پاسخ تو همان زمان نده ، مثلا پاسخ ۲ دقیقه دیگه مشخص میشه ، تو این موارد سرور از کلاینت یه شناسه درخواست میده که چک کنه درخواست تکراری نباشه ، و به کاربر بگه درخواستت تکراریه ( البته بانک 
+نکته: در برخی سرویس‌ها (مثل سرویس‌های بانکی) ممکن است از کاربر خواسته شود که `request_id` خودش را تولید کند تا از بار ذخیره‌سازی سمت سرور کاسته شود، اما در بسیاری موارد Gateway یا کلاینت مسئول تولید شناسه است.
 
-ها چون نمیخوان ایندکس کردن سمتشون باشه ، به کاربر میگن ، شناسه یونیک خودت جنریت کن و بر عهده خودته  تکراری بودن . ولی چون مطمعنن یه یوزر ۲ بار پرداخت نمیکنه مشکلی پیش نمیاد و هزینه بر نیست یه کلاینت ۲ بار درخواست توکن پرداخت بگیره، توی بانک کد رهگیری مهمه چون به این معنیه که یونیکه این و با کد رهگیری میشه رهگیری کرد  )   
+---
 
-
+اگر بخواهید می‌توانم همین سند را به‌صورت یک فایل Markdown یا PDF آمادهٔ دانلود کنم یا نسخهٔ بدون تیتر (یکپارچه) براتون بسازم.
