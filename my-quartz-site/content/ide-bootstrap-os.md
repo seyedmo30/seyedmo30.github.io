@@ -1322,6 +1322,11 @@ binding='<Control><Alt>KP_Down'
 command='pactl set-sink-volume @DEFAULT_SINK@ -5%'
 name='Volume Down'
 ```
+### Ubuntu 24.04 — Wayland / Xwayland resize bug:
+
+اینو تو zsh  بیفزای
+
+`alias gg='pkill -HUP -f mutter-x11-frames || pkill -f mutter-x11-frames'`
 
 ### clipboard
 
