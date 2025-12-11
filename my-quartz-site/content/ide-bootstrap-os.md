@@ -1,14 +1,14 @@
 چیزایی که باید رو vscode نصب شه :
 
-Git Graph  ----   ext install mhutchie.git-graph
+Git Graph  ----    mhutchie.git-graph
 
-git lens
+git lens  -  eamodio.gitlens
 
-Error Lens  ---   ext install usernamehw.errorlens
+Error Lens  ---    usernamehw.errorlens
 
-Paste JSON as Code --- ext install quicktype.quicktype
+Paste JSON as Code ---  quicktype.quicktype
 
-Prettier - Code formatter --- ext install esbenp.prettier-vscode
+Prettier - Code formatter ---  esbenp.prettier-vscode
 
 bookmarks - برای علامت زدن روی کدی که مهمه در یه فایل بزرگ
 
