@@ -491,3 +491,19 @@ WHERE is_active = TRUE;
 
 میشه گفت **gorm** بیشتر **Model-first** هست و **ent** بیشتر **code-first** هست
 
+
+
+### **backup** 
+ابتدا باید توی اون ماشین بریم و اینو اجرا کنیم
+
+`PGPASSWORD=postgres pg_dump -h 127.0.0.1 -p 5433 -U postgres -Fc -f /tmp/tootia.sql tootia`
+
+سپس باید از ماشین خودمون اونو دانلود کنیم
+
+`scp root@65.108.210.47:/tmp/tootia.sql  ./tootia.sql`
+
+
+ریستور 
+
+`pg_restore  -h localhost -p 5435 -U postgres -d exploit < ./exploit-2023-03-27.sql`
+

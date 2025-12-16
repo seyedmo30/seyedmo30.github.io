@@ -57,6 +57,27 @@ type GetOrderInfoBodyResponse struct {
 ```
 
 ---
+## file embeding  
+
+### embed.FS
+
+یکی از کار هایی خفنی که هنگام خوندن فایل های استاتیک می شه انجام داد امبد کردن اون به یه وریبل هست . ۲ تا وبی داره ، یکی این که هر بار از دیسک خونده نمی شه ، دوم اینکه مشکل گولنگ اینه که آدرس های نسبی زمان توسعه و کامپایل متفاوته ، با این تکنیک تو هر صورتی فایل خونده می شه ، اگرم موقع توسعه آدرس درست نباشه ide  خطا میده
+
+```go
+//go:embed swagger-ui/*
+var embedded embed.FS
+
+// SwaggerUIFS returns an http.FileSystem rooted at the swagger-ui directory
+func SwaggerUIFS() (http.FileSystem, error) {
+	// swagger-ui/* files are embedded under "swagger-ui" (relative to this file)
+	fsys, err := fs.Sub(embedded, "swagger-ui")
+	if err != nil {
+		return nil, err
+	}
+	return http.FS(fsys), nil
+}
+```
+
 
 ## Deadlock vs Blocking
 
@@ -325,3 +346,20 @@ func main() {
     fmt.Println(result)
 }
 ```
+## go tool
+
+یه فیچر جدیده که از 1.24 اومده و مزایای زیر رو داره
+
++ قبلا مجبور بودیم گلوبالی نصب کنیم بدیشم این بود که ورژن بندی نبود و مجبور بودیم تمام برنامه ها از یه ورژن استفاده کنن ، تقریبا شبیه استفاده نکردن ازenv  در پایتون
+
++ تویci/cd هر بار باید دانلود کنیم و و هر بار احتمالا جدید ترین نسخه رو دانلود می کرد
+
++ نیاز مندی به تولز ها قابل مشاهده و مستند نبود
+
+## work (workspace)
+
+گاهی داریم ۲ یا چند ریپازیتوری را در یک پروژه استفاده می کنیم و می خواهیم که در یک ریپازیتوری تغییرات را بدهیم و در ریپازیتوری دیگر هم تغییرات را ببینیم بدون اینکه ریپوی پیش نیاز رو پوش کنیم ، ریلیز بگیریم و در نهایت تست کنیم ، در این صورت فیچر جدید که از 1.24 اومده رو استفاده می کنیم 
+
+`go work init ./go-clean-template ./go-clean-template-client/api`
+
+هر دو رو توی یک فولدر میزاریم و دستور بالا رو می زنیم ، دیگه از gopath نمیره پکیج ها رو بخونه 
