@@ -383,3 +383,57 @@ services:
 #### **Confluent Schema Registry**:
 
 اگر بخواهیم api  هایی تو کافکا رو مانند http rest  که با swagger  مستند و قابل تست کرده ، انجام بدیم از این ابزار استفاده میکنیم
+
+
+
+### docker compose
+
+یه لوکال کوچولو با ریسورس کم
+
+```yaml
+
+version: '3.9'
+
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    container_name: redpanda
+    ports:
+      - "9092:9092"      # For host clients
+      - "29092:29092"    # External listener
+      - "8081:8081"      # Console / Schema Registry
+    command:
+      - redpanda
+      - start
+      - --mode dev-container      # Full dev optimizations
+      - --smp 1
+      - --memory 512M             # Low memory usage
+      - --node-id 0
+      - --kafka-addr
+      - "internal://0.0.0.0:9092,external://0.0.0.0:29092"
+      - --advertise-kafka-addr
+      - "internal://redpanda:9092,external://host.docker.internal:29092"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "rpk cluster info --brokers localhost:9092 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data   # ← This line persists your topics and messages
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8092:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: redpanda:9092
+      DYNAMIC_CONFIG_ENABLED: "true"
+    depends_on:
+      - redpanda
+    restart: unless-stopped
+
+volumes:
+  redpanda-data:   # ← Named volume (automatically created and managed by Docker)
+```
