@@ -1332,3 +1332,16 @@ name='Volume Down'
 
 
 + diodon
+
+
+### tmux
+
+sudo nano ~/.tmux.conf
+
+```
+set -g mouse on
+set -g pane-border-status top
+set -g pane-border-format "#{pane_current_command} | #{pane_current_path}"
+```
+
+tmux source-file ~/.tmux.conf
