@@ -65,6 +65,8 @@ protocol
 
 ما همیشه از این دیزاین استفاده می کنیم بدون اینکه بفهمیم
 
+بهتره که اینترقیس این لایه از dto  های یوزکیس و یا entity  استفاده کنه ، و نه dto  مدل ها
+
 ### Clean Architecture Directory/Layers 
 
 **Entities**: Represent the core business objects.
