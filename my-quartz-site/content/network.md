@@ -237,3 +237,19 @@ Pipes :
 +  curl -x socks5h://127.0.0.1:1080 https://api.ipify.org
 
 139.345.456.77%  
+
+## Docker advertises internal hostname
+
+فرض کنیم داکر تنها به شبکه ی داخلی اکسپوز شده ، و نمیشه از بیرون ماشین ، به اون دسترسی داشت 
+
++ اگه کانکشن tcp  بود میشه از socat  استفاده کرد مثل یه سری سرویس های داخلی
+
++ ولی اگه مثل kafka  بود  و علاوه بر tcp  یه سری چیزا مثل metadata یا redirect هم داشت ، اونجا باید از ssh  استفاده کرد ، در این مورد باید مراحل زیر ور انجام بدیم
+
++ +   ابتدا باید  نامل نتورک داکر کافکا رو بدست بیاریم
+
++ +   `sudo sh -c 'echo "127.0.0.2 internal_network_name_kafka" >> /etc/hosts'`  
+
++ + `ssh -N -L 127.0.0.2:9092:localhost:9092 root@DEV_IP`
+
++ + `bin/kafka-topics.sh --bootstrap-server exchange_kafka:9092 --list`    
