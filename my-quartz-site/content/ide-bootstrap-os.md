@@ -995,6 +995,107 @@ finntenzor.change-case   -   برای تغییر pascal case to camel case  با
 
 
 ```
+### read debug envs from workspace :
+
+
+`bash ./run.sh --name exhub`
+
+
+```sh
+ #!/usr/bin/env bash
+# run.sh
+# Loads environment variables from .vscode/launch.json and runs go run main.go
+# Default config: "exhub"
+# Usage:
+#   ./run.sh
+#   ./run.sh --name lens
+#   ./run.sh --name algo
+
+set -euo pipefail
+
+# ────────────────────────────────────────────────
+# Configuration
+# ────────────────────────────────────────────────
+DEFAULT_CONFIG="exhub"
+
+# ────────────────────────────────────────────────
+# Helpers
+# ────────────────────────────────────────────────
+die() { echo "ERROR: $*" >&2; exit 1; }
+
+command -v jq >/dev/null 2>&1 || die "jq is required (install with apt/yum/brew install jq)"
+
+find_launch() {
+  # Prefer git root (monorepo friendly)
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    local root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [[ -n "$root" && -f "$root/.vscode/launch.json" ]]; then
+      echo "$root/.vscode/launch.json"
+      return 0
+    fi
+  fi
+
+  # Fallback: walk up directories
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -f "$dir/.vscode/launch.json" ]]; then
+      echo "$dir/.vscode/launch.json"
+      return 0
+    fi
+    dir=$(dirname "$dir")
+  done
+
+  die "No .vscode/launch.json found in current or parent directories"
+}
+
+# ────────────────────────────────────────────────
+# Main logic
+# ────────────────────────────────────────────────
+LAUNCH_FILE=$(find_launch)
+
+CONFIG_NAME="$DEFAULT_CONFIG"
+if [[ "${1:-}" =~ ^(--name|-name)$ ]]; then
+  shift
+  [[ -z "${1:-}" ]] && die "--name requires a value"
+  CONFIG_NAME="$1"
+  shift
+fi
+
+# Extract key=value lines from the selected configuration
+ENV_LINES=$(sed -E 's/^[[:space:]]*\/\/.*$//' "$LAUNCH_FILE" \
+  | jq -r --arg cfg "$CONFIG_NAME" '
+    (.configurations // [] | .[] | select(.name == $cfg) | .env // {})
+    | to_entries[]
+    | "\(.key)=\(.value)"
+  ') || die "Failed to parse launch.json"
+
+# If no env vars found → warn but continue
+if [[ -z "$ENV_LINES" ]]; then
+  echo "⚠️  No environment variables found in configuration '$CONFIG_NAME'" >&2
+fi
+
+# Export every valid variable
+while IFS= read -r line; do
+  if [[ -n "$line" ]]; then
+    key="${line%%=*}"
+    value="${line#*=}"
+    if [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+      export "$key=$value"
+    else
+      echo "  Warning: skipped invalid variable name → $key" >&2
+    fi
+  fi
+done <<< "$ENV_LINES"
+
+# ────────────────────────────────────────────────
+# Run the application with the loaded environment
+# ────────────────────────────────────────────────
+echo "Starting: go run main.go  (with env from config '$CONFIG_NAME')"
+echo ""
+
+exec go run main.go "$@"
+ 
+```
 
 ### read debug envs
 

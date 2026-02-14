@@ -221,3 +221,21 @@ func main() {
     wg.Wait()
 }
 ```
+
+# map - lock - pointer
+
+گاهی می خوایم یه دیتا استراکت بسازیم که به شکل زیر باشه
+
+```go
+map[int]P
+
+type P struct {
+	id         int
+	status     string
+	lockStatus sync.Mutex
+}
+```
+
+در این صورت که mutex داخل استراکت هست ، گولنگ مستقیم نمی تونه
+
+بهترین کار اینه که یه lock  هم برای خود مپ بنویسیم

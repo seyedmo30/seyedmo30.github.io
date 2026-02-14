@@ -6,8 +6,9 @@
 
 
 
-#### private git repository
+## private git repository  - 403 - 443  - forbidden
 
+### common
 اگر بخواهیم یه پکیبج درون گیت شرکت توسغه بدیم و تنها اونجا استفاده کنیم ، بادی مقدار زیر رو اکسپورت کنیم
 
 یه نمونه آدرسی که درون گروه بک اند است
@@ -30,9 +31,11 @@ nano ~/.gitconfig
         insteadOf = https://git.maani.app/
 ```
 
-#### 403 - 443  - forbidden
+### پیشرفته
 
 یه سری وقتا یه پکیج نصب نمی شه ، شاید بشه با یه سری فلگ نصب کرد
+
+`GOPROXY=https://goproxy.io,direct GOPRIVATE=git.srxx.org  GONOSUMDB=off  go mod tidy`
 
 `GOPROXY=https://proxy.golang.org,direct go get github.com/gin-gonic/gin`
 
@@ -46,6 +49,74 @@ export GOSUMDB=off
 
 go mod tidy
 ```
+
+### جنگی - ssh
+
+گاهی وقتا که جنگ می شه یا اینترنتا رو میبندن ، شاید این به کار بیاد ولی بعدش دوباره تغییرات رو پاک کنید
+
+گاهی با ssh نمی شه کار کرد بجاش باید http go get - (git fetch) زد در این صورت باید مانند کانفیگ گیت ،  درون کانفیگ go get  هم تغییر ایجاد کرد ، 
+
+باید دقیقا مثل کانفیگ گیت ، اکسس توکن توی آدرس بزاریم
+
+```
+
+➜   git:(master) pwd
+/home/mo30/go/pkg/mod/cache/vcs/d126bcdab4b653fdb2a5bc2e92d0fab809494e1e63e6535f0187add1c34a399d
+
+
+
+
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "origin"]
+	url = https://jang:glpat-xxxxxxxxxx@git.srxx.org/clients/exhub-client.git  // اینجا مهم است
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	gk-last-accessed = 2026-01-19T07:34:41.164Z
+
+```
+
+حالا همچنین نیاز داریم پکیج های داخلی رو موقع نصب با http  نصب کنیم به جای ssh  در این صورت ابتدا باید user , pass  گیت رو گلوبال بزارم تا موقغ خودکار نصب دیپندنسی ها توسط go mod tidt --- go get  بره از اونجا بگیره : مراحل زیر رو باید انجام بدیم :
+
+
+
+```sh
+cat > ~/.netrc <<EOF
+machine git.srxx.org
+login jang
+password glpat-xxxxxx
+EOF
+chmod 600 ~/.netrc
+```
+
+و بعد از این
+
+`git config --global url."https://git.srxx.org/".insteadOf "git@git.srxx.org:"`
+ و 
+
+`git config --global url."https://git.srxx.org/".insteadOf "ssh://git@git.srxx.org/"`
+
+
+
+
+### no required module provides package  - to add it
+
+وقتی توی یه workspace  یه پروژه میزاری ولی یوز نمیکنی ، این خطا رو میده
+
+main.go:9:2: no required module provides package git.srxx.org/core/depowith/di; to add it:
+        go get git.srxx.org/core/depowith/di
+
+## clear cache internal gitlab repo
+
+مشاهده
+
+`grep -R "git.srxx.org" $(go env GOPATH)/pkg/mod/cache/vcs 2>/dev/null | head -n 20`
+
+پاک کردن
+
+`find "$(go env GOPATH)/pkg/mod/cache/vcs" -type f -exec grep -l "git.srxx.org" {} \; | xargs -r rm -v`
 
 #### cobra vs multiple cmd folders
 

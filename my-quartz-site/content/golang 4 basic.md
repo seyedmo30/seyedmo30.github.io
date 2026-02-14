@@ -331,21 +331,50 @@ func main() {
 
 ### Closure
 
-تابعی که خروجی آن تابع دیگری است:
+یه تابع استیت فول
+
+فانکشن به متغیرهایی که خارج از خودش تعریف شدن دسترسی داره و مهم‌تر: اون متغیرها رو به خاطر می‌سپاره
+
+
+
+همچنین مثال زیر :
 
 ```go
-func makeAdder(x int) func(int) int {
-    return func(y int) int {
-        return x + y
-    }
-}
 
-func main() {
-    addFive := makeAdder(5)
-    result := addFive(3)  // 5 + 3 = 8
-    fmt.Println(result)
+func counter() func() int {
+	count := 0
+
+	return func() int {
+		count++
+		return count
+	}
 }
+//
+c := counter()
+
+fmt.Println(c()) // 1
+fmt.Println(c()) // 2
+fmt.Println(c()) // 3
 ```
+
+####  کجاها استفاده میشه؟
+
++ می تونه جایگزین بعضی از استراکت ها بشه -  زمانی که یه استراکت داریم که تنها یه بار اینستنس ازش ساخته شده و تنها یه ریسیور داره ، در نتیجه این راحت تره
+
++ middlewares
+
++   Goroutine + Closure (خیلی رایج)
+
+بدون closure اصلاً نمی‌تونی job رو به goroutine ببندی.
+
++ callbacks
+
++ dependency injection
+
++ نگه داشتن state بدون struct
+
++ retry / rate limit / circuit breaker
+
 ## go tool
 
 یه فیچر جدیده که از 1.24 اومده و مزایای زیر رو داره
@@ -363,6 +392,28 @@ func main() {
 `go work init ./go-clean-template ./go-clean-template-client/api`
 
 هر دو رو توی یک فولدر میزاریم و دستور بالا رو می زنیم ، دیگه از gopath نمیره پکیج ها رو بخونه 
+
+### go work sync
+
+این تمام نیاز مندی هایی که تو چند سرویس تکرار شدن رو یکی میکنه ، پس زیاد دستور جالبی نیست
+
+
+### to it
+
+اگه همچین خطایی دیدیم ، باید توی go work mod  اون پروژّ رو اضافه کنیم
+
+
+### requires not found : 
+بعد ۳ روز دهن سرویسی فهمیدم که توی یه ورک اسپیس  ۲ تا ریپازیتوری وابسته به یه وابستگی غیر مستقیم درخواست می ززن ، و اون از گیت هاب پاک شده
+
+تو این صورت همه چی خطا میگیره ، برای حل کردنش باید اون پکیج رو یا پاک کنیم ، یا نیاز مندیشو تغغیر بدیم
+
+در کل تو خطا ها workspace  باید چیزی از تو گیت پاک نشده باشه
+
+
+`remote: Repository not found.`
+
+`fatal: repository 'https://github.com/mitchellh/osext/' not found`
 
 ## state full service (map - slice) 
 

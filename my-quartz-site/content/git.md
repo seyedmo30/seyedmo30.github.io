@@ -150,6 +150,15 @@ git checkout dev
 git reset --hard origin/dev
 
 ```
+
++ روش دوم
+
+```
+git rebase --abort
+git fetch origin
+git reset --hard origin/develop
+```
+
 #### MERGE VS REBASE
 مرج تاریخچه را نگه می دارد در حالی که ریبیس تاریخچه را می توان تغییر داد  و بازگشت و ریورت در مرج آسان تر است 
 

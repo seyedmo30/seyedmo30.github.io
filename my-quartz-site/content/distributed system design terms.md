@@ -495,3 +495,9 @@ graph TD;
 
 آن را داخل تیبل های دیتابیس ذخیره می کنیم ، حال اگر کار بری در خواست ورودی به یک سایت زد و کدی همراه داشت ، آن را ابتدا تغییر می دیم به مبنای ۱۰ و آن را از دیتابیس ورمیداریم و کاربر روی ریدایرکت میکنیم به سایت مورد نظر
 
+
+# reference
+
+یه مارکداون فارسی و جذاب
+
+[backend-performance-best-practices](https://github.com/mrbardia72/Go-Interview-Questions-And-Answers/blob/main/best-practice/backend-performance-best-practices.md)
