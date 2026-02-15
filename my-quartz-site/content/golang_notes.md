@@ -118,6 +118,27 @@ main.go:9:2: no required module provides package git.srxx.org/core/depowith/di; 
 
 `find "$(go env GOPATH)/pkg/mod/cache/vcs" -type f -exec grep -l "git.srxx.org" {} \; | xargs -r rm -v`
 
+### unrecognized import path 404 Not Found
+
+سر این من دهنم سرویس شد - وقتی یه ریپازیتوری داخلی رو go get  میزنیم میگه نیست - در این صورت احتمال داره گیت ssh  نداشته باشه یا خراب باشه در این صورت باید replace کنیم به صورت زیر :
+
+دلیلش اینه که احتمالا گیت آدرسی با **.git** نداره
+
+
+
+> module declares its path as: git.srxx.org/clients/exhub-client
+> but was required as: git.srxx.org/clients/exhub-client.git
+
+
+من سر این موضوع ۲ روز کامل درگیر بودم ، با اینکه ست کرده بودم به جای **http** از **ssh** استفاده کن اما بازم میگفت 404 Not Found http پس غیر مستقیم تلاش میکرد از http  بگیره اگر نمی تونست از ssh  میرفت می گرفت - هر کار کردم تجواب نداد - اول سعی کردم replace کنم و جواب داد
+
+`replace git.srxx.org/clients/internalwallet-client => git.srxx.org/clients/internalwallet-client.git v0.0.3`
+
+ولی نمی شد go.mod , و go.sum رو پوش کرد 
+
+و در آخر تماامی اطلاعات http  رو پاک کردم جوری که دیگه نمیشد هیچ چیز رو آپدیت کرد یا گرفت ، در این صورت کامل از ssh  میگرفت
+
+
 #### cobra vs multiple cmd folders
 
 در صورتی که برنامه ی ما بیش از یک حالت ران شود یعنی همزمان هم rest api http  داره هم چند کرون جاب  ، می تونیم ۲ کار کنیم :

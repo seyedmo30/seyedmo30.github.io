@@ -1295,6 +1295,9 @@ plugins=(
   colored-man-pages
 )
 
+PROMPT='${ret_status} %{$fg[cyan]%}%~%{$reset_color%} $(git_prompt_info)'
+
+alias gg='pkill -HUP -f mutter-x11-frames || pkill -f mutter-x11-frames'
 ```
 
 + در نهایت برای اعمال
