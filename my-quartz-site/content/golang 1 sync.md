@@ -48,6 +48,28 @@ func main() {
 }
 ```
 
+### mutex example custom
+
+اگه بخوایم خودمون یه میوتکس ساده بسازیم این شکلیه ، در حقیقت ساز و کار میتکس به صورت زیر هست :
+
+```go
+
+type SimpleMutex struct {
+	lock chan struct{}
+}
+
+func NewSimpleMutex() *SimpleMutex {
+	return &SimpleMutex{lock: make(chan struct{}, 1)}
+}
+
+func (m *SimpleMutex) Lock() {
+	m.lock <- struct{}{} // اگر کانال پر باشد، بلاک می‌شود → قفل گرفته می‌شود
+}
+
+func (m *SimpleMutex) Unlock() {
+	<-m.lock // آزاد کردن قفل
+}
+```
 ## RWMutex
 
 زمانی که خواندن یک متغیر نیازی به قفل کردن کامل ندارد، می‌توان از `sync.RWMutex` استفاده کرد.  

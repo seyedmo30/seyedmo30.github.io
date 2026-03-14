@@ -120,9 +120,12 @@ for w := 1; w <= 3; w++ {
 
 ---
 
-## پترن Queuing (Concurrency-Limiting Pattern)
+## پترن Semaphore  (Concurrency-Limiting Pattern)
 
 در این پترن هدف، محدود کردن تعداد پردازش‌های همزمان است تا از مصرف بیش‌ازحد منابع جلوگیری شود.
+
+سمافور = کنترل همزمانی با تعداد مجوز (permit)
+
 
 ```go
 queue := make(chan struct{}, limit)
@@ -130,6 +133,8 @@ queue := make(chan struct{}, limit)
 
 - هر بار اجرای یک پردازش منوط به وجود ظرفیت در buffer channel است.  
 - هنگام شروع کار، یک struct خالی به channel افزوده می‌شود و پس از اتمام، از آن خارج می‌شود.
+- اگر بافرمون ۱ باشه ، میشه mutex  در حقیقت میوتکس یک سمافور با بافر یک هست
+
 
 ---
 

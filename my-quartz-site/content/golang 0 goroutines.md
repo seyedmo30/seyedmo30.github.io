@@ -28,11 +28,13 @@
 
 در Go، Context Switching بین goroutineها توسط runtime در فضای **user space** انجام می‌شود، نه در سطح سیستم‌عامل، و به همین دلیل بسیار سبک‌تر و سریع‌تر است.
 
-## CSP
+## CSP - Communicating Sequential Processes
 
  در Go یعنی **همزمانی با پیام‌رسانی به‌جای حافظهٔ مشترک**؛ چند goroutine مستقل فقط از طریق **channel** با هم ارتباط می‌گیرند.
 شعارش: «به‌جای اشتراک حافظه، با ارتباط حافظه را به اشتراک بگذار.»
 
++ Processes are independent and run concurrently
++ Channels are the communication medium
 
 ---
 
