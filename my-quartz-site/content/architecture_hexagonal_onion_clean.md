@@ -1,3 +1,6 @@
+# common architecture
+
+
 ### hexagonal
 
 یکی از معماری هایی که آنکل باب با استفاده از این ، معماری کلین رو پیشنهاد می کنه
@@ -46,3 +49,28 @@ https://medium.com/@matiasvarela/hexagonal-architecture-in-go-cfd4e436faa3
 ### clean arch
 
 و اما این معماری ترکیبی از 2 معماری بالاست
+
+
+#### Application Service Orchestration
+
+گاهی یه سری نیاز مندی ها داریم که بین لایه ای هستن
+
+مثلا اگر یه trigger و یا cronjob از لایه httpcall فعال بشه و باید تاثیر روی لایه repository  بزاره ، نباید وابستگی ها رو تغییر بدیم مثلا http calll  دسترسی به repository بزاره - اینجا یه لایه اپلیکیشن داریم که یه سری ارتباطات بین لایه ای رو مدیریت می کنه
+
+
+همچنین گاهی باید یه ترنس اکشن برای چندین متد repository  باشه و این ترنس اکشن باید یه لایه بالا تر از usecase باشه این هم تو لایه ی اپلیکیشن هست
+
+
+بهترین practice این است که در لایه‌ی domain یک UseCase تعریف شود و لایه‌ی پایین‌تر (مثل Exchange یا HTTP) فقط آن interface را صدا بزند. Business logic در UseCase اجرا می‌شود و از طریق repository interface با data layer صحبت می‌کند. اگر رفتار async نیاز باشد، از channel داخل application/service layer استفاده شود. این روش ساده، تست‌پذیر و کاملاً منطبق با Clean Architecture است و از over-engineering جلوگیری می‌کند.
+
+
+# tips
+
+### تفاوت Scheduler و Job زمانی که می خواهیم لایه ی WORKER اضافه کنیم
+
+
++ Scheduler → decides WHEN something runs
+
++ Job (task) → defines WHAT runs
+
+

@@ -203,6 +203,100 @@ stream پیام هایی که متعلق به یک دسته خاصی هستند 
 جواب : بله هم سرعت بالا تری داره چون نیاز نیست محاسبه کنیم تا کجا خونده اما ۲ بدی داره اول اینکه هر چی توی تاپیک باشه می خونه و دوم اینکه تنها از یه پارتیشن می تونه بخونه ، و کانسومر بدون گروه نمیتونه تمام پارتیشن ها رو بخونه
 
 
+یه کد که از last offset + no group id  اسستفاده می کنه
+
+
+**نکته ی جان گوز**
+
+خودمون پارتیشن رو نباید ست کنیم همچنین بعد از ساخت کانستراکتور باید **آفست** رو ست کنیم
+
+```go
+
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+	"sync"
+
+	"github.com/segmentio/kafka-go"
+)
+
+func main() {
+	brokersEnv := getEnv("KAFKA_BROKERS", "exchange_kafka:9092")
+	topic := getEnv("KAFKA_TOPIC", "trades")
+	brokers := strings.Split(brokersEnv, ",")
+
+	// اتصال موقت فقط برای گرفتن لیست پارتیشن‌های تاپیک
+	conn, err := kafka.Dial("tcp", brokers[0])
+	if err != nil {
+		log.Fatalf("dial error: %v", err)
+	}
+	partitions, err := conn.ReadPartitions(topic)
+	conn.Close()
+	if err != nil {
+		log.Fatalf("read partitions error: %v", err)
+	}
+	if len(partitions) == 0 {
+		log.Fatalf("no partitions found for topic %q", topic)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var wg sync.WaitGroup
+	for _, p := range partitions {
+		wg.Add(1)
+		go func(partition int) {
+			defer wg.Done()
+			consumePartition(ctx, brokers, topic, partition)
+		}(p.ID)
+	}
+
+	log.Printf("start consuming topic=%q partitions=%d (no group, from last offset)\n", topic, len(partitions))
+	wg.Wait()
+}
+
+func consumePartition(ctx context.Context, brokers []string, topic string, partition int) {
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers: brokers,
+		Topic:   topic,
+		// نکته کلیدی ۱: GroupID عمداً ست نشده -> هیچ Consumer Groupـی درگیر نمی‌شه،
+		// این پاد کاملاً مستقل و بدون رقابت با پادهای دیگه می‌خونه.
+		Partition: partition,
+		// نکته کلیدی ۲: از آخرین آفست شروع می‌کنیم، پیام‌های قدیمی خونده نمی‌شن.
+		MinBytes: 1,
+		MaxBytes: 10e6,
+	})
+	defer r.Close()
+
+	if err := r.SetOffset(kafka.LastOffset); err != nil {
+		log.Fatal(err)
+	}
+
+	for {
+		m, err := r.ReadMessage(ctx)
+		if err != nil {
+			log.Printf("[partition %d] read error: %v", partition, err)
+			return
+		}
+		fmt.Printf("[partition %d] offset=%d key=%s value=%s\n",
+			m.Partition, m.Offset, string(m.Key), string(m.Value))
+	}
+}
+
+func getEnv(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
+}
+
+
+```
 
 
 #### standalon (single ) consumer :
